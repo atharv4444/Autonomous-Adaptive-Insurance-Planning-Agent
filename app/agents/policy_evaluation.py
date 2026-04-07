@@ -8,7 +8,7 @@ from app.models import Policy, RankedPolicy, UserProfile
 
 
 class PolicyEvaluationAgent:
-    """Rank policies with a simple utility-style scoring rule."""
+    """Rank policies with a utility-led scoring rule."""
 
     def rank_policies(
         self,
@@ -16,40 +16,80 @@ class PolicyEvaluationAgent:
         policies: List[Policy],
         risk_score: float,
         risk_label: str,
+        expected_loss: float,
     ) -> List[RankedPolicy]:
         """Score and rank policies from best to worst."""
-        ranked: List[RankedPolicy] = []
+        ranked_inputs: List[dict[str, object]] = []
 
         recommended_coverage = max(profile.income * 10, 500000)
+        if risk_label == "high":
+            recommended_coverage += expected_loss
         annual_budget = max(profile.income * 0.06, 10000)
+        premium_weight = self._premium_weight(profile.affordability_band)
 
         for policy in policies:
             suitability_score, suitability_reasons = self._score_suitability(profile, policy, risk_label)
             affordability_score = self._score_affordability(policy.premium, annual_budget)
             coverage_score = self._score_coverage(policy.coverage, recommended_coverage, risk_score)
-
-            total_score = round(
-                (suitability_score * 0.45) + (coverage_score * 0.35) + (affordability_score * 0.20),
-                2,
-            )
+            raw_utility = policy.coverage - (policy.premium * premium_weight) - expected_loss
+            premium_ratio = round(policy.premium / profile.income, 4) if profile.income > 0 else 1.0
+            coverage_gap = round(max(recommended_coverage - policy.coverage, 0.0), 2)
 
             explanation_points = suitability_reasons + [
                 f"Coverage {self._coverage_phrase(policy.coverage, recommended_coverage)} the estimated need.",
                 f"Premium is {self._premium_phrase(policy.premium, annual_budget)} for the user's budget.",
+                f"Expected loss of {expected_loss:.0f} was included in the utility calculation.",
             ]
+
+            ranked_inputs.append(
+                {
+                    "policy": policy,
+                    "raw_utility": raw_utility,
+                    "suitability_score": round(suitability_score, 2),
+                    "affordability_score": round(affordability_score, 2),
+                    "coverage_score": round(coverage_score, 2),
+                    "premium_ratio": premium_ratio,
+                    "coverage_gap": coverage_gap,
+                    "tradeoff_summary": self._build_tradeoff_summary(
+                        policy.coverage,
+                        recommended_coverage,
+                        policy.premium,
+                        annual_budget,
+                        expected_loss,
+                    ),
+                    "explanation_points": explanation_points,
+                }
+            )
+
+        utility_scores = self._normalize_utilities([item["raw_utility"] for item in ranked_inputs])
+        ranked: List[RankedPolicy] = []
+
+        for index, item in enumerate(ranked_inputs):
+            utility_score = utility_scores[index]
+            total_score = round(
+                (utility_score * 0.40)
+                + (float(item["suitability_score"]) * 0.25)
+                + (float(item["coverage_score"]) * 0.20)
+                + (float(item["affordability_score"]) * 0.15),
+                2,
+            )
 
             ranked.append(
                 RankedPolicy(
-                    policy=policy,
+                    policy=item["policy"],
                     total_score=total_score,
-                    suitability_score=round(suitability_score, 2),
-                    affordability_score=round(affordability_score, 2),
-                    coverage_score=round(coverage_score, 2),
-                    explanation_points=explanation_points,
+                    suitability_score=float(item["suitability_score"]),
+                    affordability_score=float(item["affordability_score"]),
+                    coverage_score=float(item["coverage_score"]),
+                    utility_score=utility_score,
+                    premium_ratio=float(item["premium_ratio"]),
+                    coverage_gap=float(item["coverage_gap"]),
+                    tradeoff_summary=str(item["tradeoff_summary"]),
+                    explanation_points=list(item["explanation_points"]),
                 )
             )
 
-        return sorted(ranked, key=lambda item: item.total_score, reverse=True)
+        return sorted(ranked, key=lambda item: (item.total_score, item.utility_score), reverse=True)
 
     def _score_suitability(self, profile: UserProfile, policy: Policy, risk_label: str) -> tuple[float, List[str]]:
         score = 40.0
@@ -106,3 +146,35 @@ class PolicyEvaluationAgent:
         if premium <= annual_budget * 1.25:
             return "slightly stretched"
         return "expensive"
+
+    def _premium_weight(self, affordability_band: str) -> float:
+        if affordability_band == "low":
+            return 1.5
+        if affordability_band == "high":
+            return 0.7
+        return 1.0
+
+    def _normalize_utilities(self, raw_utilities: List[object]) -> List[float]:
+        values = [float(value) for value in raw_utilities]
+        minimum = min(values)
+        maximum = max(values)
+
+        if maximum == minimum:
+            return [75.0 for _ in values]
+
+        return [round(((value - minimum) / (maximum - minimum)) * 100, 2) for value in values]
+
+    def _build_tradeoff_summary(
+        self,
+        coverage: float,
+        recommended_coverage: float,
+        premium: float,
+        annual_budget: float,
+        expected_loss: float,
+    ) -> str:
+        coverage_phrase = self._coverage_phrase(coverage, recommended_coverage)
+        premium_phrase = self._premium_phrase(premium, annual_budget)
+        return (
+            f"This policy {coverage_phrase} the target coverage, keeps premium {premium_phrase}, "
+            f"and was evaluated against an expected loss of {expected_loss:.0f}."
+        )

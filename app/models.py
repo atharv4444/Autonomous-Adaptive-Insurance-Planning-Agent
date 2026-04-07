@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, Literal
+from typing import Dict, List, Literal
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -63,7 +63,42 @@ class RankedPolicy(BaseModel):
     suitability_score: float
     affordability_score: float
     coverage_score: float
+    utility_score: float
+    premium_ratio: float
+    coverage_gap: float
+    tradeoff_summary: str
     explanation_points: List[str]
+
+
+class ScenarioBreakdown(BaseModel):
+    """Expected impact for an individual simulated scenario."""
+
+    scenario_name: str
+    probability: float
+    cost: float
+    expected_impact: float
+
+
+class ScenarioSimulationResult(BaseModel):
+    """Output returned by the scenario simulation agent."""
+
+    expected_loss: float
+    scenario_breakdown: List[ScenarioBreakdown]
+
+
+class CriticResult(BaseModel):
+    """Validation result returned by the critic agent."""
+
+    validated_policy: RankedPolicy
+    issues: List[str]
+    confidence_score: float
+
+
+class MemorySnapshot(BaseModel):
+    """Minimal memory payload included for traceability."""
+
+    profile_signature: str
+    previous_recommendations: List[Dict[str, object]]
 
 
 class RecommendationResponse(BaseModel):
@@ -72,6 +107,12 @@ class RecommendationResponse(BaseModel):
     user_profile: UserProfile
     risk_score: float
     risk_label: Literal["low", "moderate", "high"]
+    expected_loss: float
+    scenario_breakdown: List[ScenarioBreakdown]
     best_policy: RankedPolicy
+    final_recommendation: RankedPolicy
     top_policies: List[RankedPolicy]
+    critic_issues: List[str]
+    confidence_score: float
+    memory_snapshot: MemorySnapshot
     explanation: str

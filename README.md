@@ -1,13 +1,16 @@
 # Autonomous Adaptive Insurance Planning Agent
 
-A lightweight final-year project prototype that collects user financial inputs, computes a transparent risk score, compares insurance policies from a local dataset, and returns a personalized recommendation with explainability.
+A lightweight final-year project prototype that collects user financial inputs, computes a transparent risk score, simulates common financial risk scenarios, critiques candidate policies, stores basic recommendation memory, and returns a personalized recommendation with explainability.
 
 ## Features
 
-- Modular agent-based design
+- Multi-agent decision architecture
 - FastAPI endpoint for recommendation requests
 - CLI demo for quick presentation
-- Transparent risk scoring and policy ranking
+- Transparent risk scoring and utility-based policy ranking
+- Scenario simulation with expected-loss reasoning
+- Critic validation layer for policy issues and confidence scoring
+- File-backed memory for previous recommendations
 - Small local JSON policy dataset
 - Basic tests for the core recommendation flow
 - Clear extension points for future multi-agent and LLM upgrades
@@ -22,10 +25,14 @@ insurance-agent/
 │   ├── agents/
 │   │   ├── user_profiling.py
 │   │   ├── risk_analysis.py
+│   │   ├── scenario_simulation.py
 │   │   ├── policy_evaluation.py
+│   │   ├── critic.py
 │   │   └── recommendation.py
 │   ├── data/
 │   │   └── policies.json
+│   ├── memory/
+│   │   └── memory_store.py
 │   ├── utils/
 │   │   └── helpers.py
 │   └── tests/
@@ -72,9 +79,15 @@ Sample response shape:
 
 ```json
 {
-  "risk_score": 66.67,
-  "risk_label": "moderate",
+  "risk_score": 87.0,
+  "risk_label": "high",
+  "expected_loss": 16000.0,
   "best_policy": {
+    "policy": {
+      "policy_name": "SecureLife Shield"
+    }
+  },
+  "final_recommendation": {
     "policy": {
       "policy_name": "SecureLife Shield"
     }
@@ -83,6 +96,9 @@ Sample response shape:
     {},
     {},
     {}
+  ],
+  "critic_issues": [
+    "No major issues detected by the critic."
   ],
   "explanation": "SecureLife Shield is recommended because ..."
 }
@@ -107,15 +123,22 @@ pytest app/tests -q
 1. User input is validated with sensible defaults.
 2. The User Profiling Agent builds a normalized profile.
 3. The Risk Analysis Agent computes a transparent risk score.
-4. Policies are loaded from `app/data/policies.json`.
-5. The Policy Evaluation Agent scores policies using:
+4. The Scenario Simulation Agent estimates expected loss from common real-world events.
+5. Policies are loaded from `app/data/policies.json`.
+6. The Policy Evaluation Agent scores policies using:
    - suitability to goal, life stage, and risk level
    - coverage fit
    - premium affordability
-6. The Recommendation Agent returns:
+   - utility-based reasoning with expected loss
+7. The Critic Agent validates the top candidates, flags issues, and can rerank the final choice.
+8. The Memory Store saves the profile and past recommendations in `app/data/memory_store.json`.
+9. The Recommendation Agent returns:
    - best policy
+   - final validated recommendation
    - top 3 ranked policies
    - risk score and risk label
+   - expected loss and scenario breakdown
+   - critic issues and confidence score
    - explanation text for demo/viva use
 
 ## Risk Score Formula
@@ -134,12 +157,12 @@ This design is intentional for explainability and can later be replaced with a l
 
 The code is structured so the following can be added later without major refactoring:
 
-- Scenario Simulation Agent
-- Critic Agent
-- Memory system
 - LLM-based explanation generator
-- Advanced risk models
-- Multi-agent orchestration
+- Personalized scenario simulation
+- Real policy and risk APIs
+- Advanced ML risk and utility models
+- Regulatory/compliance checks
+- Deeper multi-agent orchestration
 
 ## Notes
 
