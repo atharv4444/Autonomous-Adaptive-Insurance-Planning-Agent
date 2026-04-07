@@ -15,6 +15,16 @@ A lightweight final-year project prototype that collects user financial inputs, 
 - Basic tests for the core recommendation flow
 - Clear extension points for future multi-agent and LLM upgrades
 
+## Versioning & Prototypes
+
+This project uses a branched versioning strategy to preserve the evolution of the autonomous agent:
+
+- **`main`**: The latest, most stable, and feature-complete version (currently Prototype 2).
+- **`prototype-1`**: The initial baseline implementation of the agentic structure.
+- **`prototype-2`**: Implementation of the multi-agent recommendation engine, including the Critic layer and Scenario Simulation.
+
+To switch between versions, use `git checkout <branch-name>`.
+
 ## Project Structure
 
 ```text
