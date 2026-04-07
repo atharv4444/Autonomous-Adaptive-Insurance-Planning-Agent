@@ -19,9 +19,10 @@ A lightweight final-year project prototype that collects user financial inputs, 
 
 This project uses a branched versioning strategy to preserve the evolution of the autonomous agent:
 
-- **`main`**: The latest, most stable, and feature-complete version (currently Prototype 2).
+- **`main`**: The latest, most stable, and feature-complete version (currently Prototype 3).
 - **`prototype-1`**: The initial baseline implementation of the agentic structure.
 - **`prototype-2`**: Implementation of the multi-agent recommendation engine, including the Critic layer and Scenario Simulation.
+- **`prototype-3`**: Graphical user interface using Streamlit for interactive simulations and visualization.
 
 To switch between versions, use `git checkout <branch-name>`.
 
@@ -67,6 +68,18 @@ uvicorn app.main:app --reload
 ```
 
 Open [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) for the interactive Swagger UI.
+
+## Run The Streamlit UI
+
+For a graphical demonstration with charts and interactive forms:
+
+```bash
+# Set PYTHONPATH to the root directory
+export PYTHONPATH=$PYTHONPATH:.
+streamlit run app/ui.py
+```
+
+Open [http://localhost:8501](http://localhost:8501) in your browser.
 
 ### API Example
 
