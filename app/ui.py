@@ -577,15 +577,21 @@ def render_scenario_simulation(result: RecommendationResponse) -> None:
             text=f"Likelihood of {m['title']}: {item.probability:.1%}",
         )
 
-        with st.expander("🔢 Calculation Detail"):
+        if item.reasons:
+            with st.expander("Why this probability? (AI Reasoning)"):
+                for reason in item.reasons:
+                    st.markdown(f"- {reason}")
+
+        with st.expander("Calculation Detail"):
             st.code(
-                f"Expected Impact  =  Probability  ×  Cost\n"
-                f"               =  {item.probability:.4f}  ×  ₹{item.cost:,.0f}\n"
-                f"               =  ₹{item.expected_impact:,.0f}",
+                f"Expected Impact  =  Probability  x  Cost\n"
+                f"               =  {item.probability:.4f}  x  Rs.{item.cost:,.0f}\n"
+                f"               =  Rs.{item.expected_impact:,.0f}",
                 language=None,
             )
 
         st.divider()
+
 
     # Summary comparison chart
     st.markdown("#### 📊 Scenario Impact Comparison")
@@ -619,7 +625,7 @@ def render_policy_evaluation(result: RecommendationResponse) -> None:
         "Utility, Suitability, Coverage Fit, and Affordability."
     )
 
-    medals = ["🥇", "🥈", "🥉"]
+    medals = ["#1", "#2", "#3"]
     final_name = result.final_recommendation.policy.policy_name
 
     for i, rp in enumerate(result.top_policies):
@@ -628,8 +634,9 @@ def render_policy_evaluation(result: RecommendationResponse) -> None:
 
         with st.expander(
             f"{badge} {rp.policy.policy_name}  ·  Total Score: {rp.total_score:.2f}"
-            + ("  ✅ RECOMMENDED" if is_final else ""),
+            + ("  [RECOMMENDED]" if is_final else ""),
             expanded=(i == 0),
+
         ):
             c1, c2, c3, c4, c5 = st.columns(5)
             c1.metric("Coverage", f"₹{rp.policy.coverage:,.0f}")

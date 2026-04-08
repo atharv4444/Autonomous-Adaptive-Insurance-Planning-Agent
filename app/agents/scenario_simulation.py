@@ -101,6 +101,7 @@ class ScenarioSimulationAgent:
             probability=round(med_prob, 4),
             cost=round(med_cost, 2),
             expected_impact=round(med_prob * med_cost, 2),
+            reasons=self._medical_reasons(profile),
         ))
 
         # ── Accident  (Logistic + Linear Regression) ─────────────────
@@ -111,6 +112,7 @@ class ScenarioSimulationAgent:
             probability=round(acc_prob, 4),
             cost=round(acc_cost, 2),
             expected_impact=round(acc_prob * acc_cost, 2),
+            reasons=self._accident_reasons(profile),
         ))
 
         # ── Income Loss  (Logistic + Linear Regression) ──────────────
@@ -121,6 +123,7 @@ class ScenarioSimulationAgent:
             probability=round(inc_prob, 4),
             cost=round(inc_cost, 2),
             expected_impact=round(inc_prob * inc_cost, 2),
+            reasons=self._income_loss_reasons(profile),
         ))
 
         expected_loss = round(sum(s.expected_impact for s in breakdown), 2)
@@ -128,6 +131,99 @@ class ScenarioSimulationAgent:
             expected_loss=expected_loss,
             scenario_breakdown=breakdown,
         )
+
+    # ── Profile-aware reason generators ────────────────────────────
+
+    @staticmethod
+    def _medical_reasons(profile: UserProfile) -> list[str]:
+        """Explain in plain language why medical probability is what it is."""
+        reasons: list[str] = []
+
+        # Age
+        if profile.age > 55:
+            reasons.append(f"You are {profile.age} years old — older individuals face significantly higher risk of chronic illness, hospitalisation, and surgery.")
+        elif profile.age > 40:
+            reasons.append(f"At age {profile.age}, the likelihood of lifestyle diseases like hypertension or diabetes starts to rise.")
+        else:
+            reasons.append(f"At age {profile.age}, you are relatively young, which lowers your baseline medical risk.")
+
+        # Dependents → elderly parents
+        if profile.dependents >= 3:
+            reasons.append(f"You have {profile.dependents} dependents. With elderly parents or multiple children in the household, combined medical expenses can be substantially higher.")
+        elif profile.dependents > 0:
+            reasons.append(f"Supporting {profile.dependents} dependent(s) means medical costs can extend beyond just yourself.")
+
+        # Income → cost scaling
+        if profile.income < 400000:
+            reasons.append("Your annual income is relatively low, meaning even a moderate medical emergency could consume several months of earnings.")
+        elif profile.income > 1500000:
+            reasons.append("Higher income individuals often seek premium treatment, which raises the estimated cost of a medical emergency.")
+
+        # Goal signal
+        if profile.insurance_goal == "health_security":
+            reasons.append("You specifically selected Health Security as your goal, indicating awareness of medical risk — this is factored into the model.")
+
+        return reasons
+
+    @staticmethod
+    def _accident_reasons(profile: UserProfile) -> list[str]:
+        """Explain in plain language why accident probability is what it is."""
+        reasons: list[str] = []
+
+        # Age
+        if profile.age < 28:
+            reasons.append(f"At age {profile.age}, younger individuals statistically have higher accident rates due to driving behaviour and physical activity.")
+        elif profile.age > 55:
+            reasons.append(f"At age {profile.age}, reaction times may be slower, which can increase accident risk during commutes.")
+        else:
+            reasons.append(f"Your age ({profile.age}) places you in a moderate accident-risk bracket.")
+
+        # Car ownership proxy via goal
+        if profile.insurance_goal == "car_insurance":
+            reasons.append("You are seeking car insurance, which directly implies you own a vehicle — vehicle ownership is the primary driver of accident probability.")
+
+        # Dependents → school runs, more road time
+        if profile.dependents >= 2:
+            reasons.append(f"With {profile.dependents} dependents, daily commutes for school runs, errands, and family transport increase total time on roads.")
+
+        # Liabilities → vehicle loan proxy
+        if profile.liability_ratio > 0.5:
+            reasons.append("Your liability-to-income ratio suggests possible vehicle or personal loans, indicating you likely own assets like a car that elevate accident exposure.")
+
+        return reasons
+
+    @staticmethod
+    def _income_loss_reasons(profile: UserProfile) -> list[str]:
+        """Explain in plain language why income loss probability is what it is."""
+        reasons: list[str] = []
+
+        # Liability ratio
+        if profile.liability_ratio > 1.0:
+            reasons.append(f"Your total liabilities are {profile.liability_ratio:.1f}x your annual income — if you lost your job, EMI payments and debt obligations would be immediately at risk.")
+        elif profile.liability_ratio > 0.5:
+            reasons.append(f"Your liabilities represent {profile.liability_ratio:.0%} of your income, meaning income disruption would create real financial pressure.")
+        else:
+            reasons.append("Your liability-to-income ratio is healthy, which lowers the financial severity of a potential income disruption.")
+
+        # Net worth
+        if profile.net_worth <= 0:
+            reasons.append("Your net worth is currently negative (liabilities exceed assets), meaning you have no financial buffer if income stops.")
+        elif profile.net_worth < 500000:
+            reasons.append(f"Your net savings cushion of ₹{profile.net_worth:,.0f} could cover only a short period if income stopped unexpectedly.")
+        else:
+            reasons.append(f"A net worth of ₹{profile.net_worth:,.0f} provides some resilience against income loss.")
+
+        # Dependents
+        if profile.dependents >= 2:
+            reasons.append(f"With {profile.dependents} dependents relying on your income, any disruption would affect multiple people's daily expenses and education costs.")
+        elif profile.dependents == 1:
+            reasons.append("One dependent means your income loss would immediately affect another person's financial stability.")
+
+        # Income level
+        if profile.income < 300000:
+            reasons.append("Low annual income means there is little excess savings each month to fall back on during a period of unemployment.")
+
+        return reasons
 
     # ── Fallback (rule-based, used only when models are missing) ─────
 

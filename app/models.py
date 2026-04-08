@@ -85,6 +85,8 @@ class ScenarioBreakdown(BaseModel):
     probability: float
     cost: float
     expected_impact: float
+    reasons: List[str] = Field(default_factory=list)
+
 
 
 class ScenarioSimulationResult(BaseModel):
