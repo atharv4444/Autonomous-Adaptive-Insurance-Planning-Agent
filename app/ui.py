@@ -537,9 +537,11 @@ Risk Score = Age Score + Dependent Score + Liability Score + Income Score + Net 
 def render_scenario_simulation(result: RecommendationResponse) -> None:
     st.subheader("🎲 Scenario Simulation")
     st.caption(
-        "The **Scenario Simulation Agent** estimates the financial impact of real-world events "
-        "**personalised to your profile** — age, income, dependents, and liabilities all affect the numbers."
+        "The **Scenario Simulation Agent** uses **trained Logistic Regression** (probability) "
+        "and **Linear Regression** (cost) models — learned from 3,000 synthetic actuarial samples — "
+        "to predict personalised financial risk for your exact profile."
     )
+
 
     st.metric("💥 Total Expected Annual Loss", f"₹ {result.expected_loss:,.0f}",
               help="Weighted sum of expected losses across all simulated scenarios.")

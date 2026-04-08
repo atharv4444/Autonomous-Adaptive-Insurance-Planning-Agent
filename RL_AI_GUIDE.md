@@ -40,3 +40,76 @@ By moving away from "if-else" logic, the system now has the capacity to:
 - **Generalize**: It can make predictions for user profiles it has never seen before.
 - **Optimize**: It maximizes a multi-dimensional reward function (balancing cost vs. protection).
 - **Self-Improve**: The training script (`train_rl_model.py`) can be re-run with new data to continuously improve the agent's performance.
+
+---
+
+# Data-Driven Scenario Calibration (ML Component 2)
+
+The **Scenario Simulation Agent** has been upgraded from hard-coded rules to a fully **data-driven** system powered by trained Logistic and Linear Regression models.
+
+## 📊 Training Data
+
+A synthetic actuarial dataset of **3,000 samples** is generated (`generate_scenario_data.py`), where each record represents a person with:
+
+| Feature | Description | Normalisation |
+|---|---|---|
+| `age_norm` | Person's age | `age / 70` |
+| `income_norm` | Annual income | `income / 3,000,000` |
+| `dep_norm` | Number of dependents | `dependents / 5` |
+| `liab_ratio` | Liabilities ÷ Income | Clipped 0–3 |
+| `nw_norm` | Net worth | Clipped -1 to 1 |
+
+Ground-truth labels (whether the person experienced a medical emergency, accident, or income loss) are generated using **sigmoid-over-logit** functions that mimic real-world actuarial distributions.
+
+## 🧮 Models Trained (6 total)
+
+### Probability Models — Logistic Regression (Gradient Descent)
+
+For each scenario (medical, accident, income loss), a Logistic Regression model is trained using **Binary Cross-Entropy** loss and **Gradient Descent**:
+
+```
+P(event) = sigmoid(bias + w1*age + w2*income + w3*deps + w4*liab_ratio + w5*net_worth)
+```
+
+Training loop (500–600 epochs):
+1. Forward pass: compute `p = sigmoid(X @ w)`
+2. Gradient: `grad = X.T @ (p - y) / n`
+3. Update: `w -= learning_rate * grad`
+
+### Cost Models — Linear Regression (Closed-Form OLS)
+
+For each scenario, a Linear Regression model predicts the expected cost using the **exact analytical solution**:
+
+```
+w = (X^T X)^(-1) X^T y
+```
+
+This is a **zero-iteration** solution — no gradient descent needed. Cost predictions are scaled by 1,000,000 for numerical stability.
+
+## 📈 Model Performance
+
+| Model | Type | Metric | Score |
+|---|---|---|---|
+| Medical Probability | Logistic Regression | Accuracy | 61.5% |
+| Accident Probability | Logistic Regression | Accuracy | 90.6% |
+| Income Loss Probability | Logistic Regression | Accuracy | 82.0% |
+| Medical Cost | Linear Regression | RMSE | 0.032 |
+| Accident Cost | Linear Regression | RMSE | 0.050 |
+| Income Loss Cost | Linear Regression | RMSE | 0.655 |
+
+## 🔄 How It Works at Runtime
+
+1. User profile is converted to a 5-feature vector (same normalisation as training)
+2. Feature vector is fed through the Logistic Regression model → predicts **probability** (0–60%)
+3. Feature vector is fed through the Linear Regression model → predicts **expected cost** (₹)
+4. `Expected Impact = Probability × Cost` for each scenario
+5. `Total Expected Loss = Sum of all impacts`
+
+## 🗂 Files
+
+| File | Purpose |
+|---|---|
+| `app/scripts/generate_scenario_data.py` | Generates synthetic actuarial training data |
+| `app/scripts/train_scenario_models.py` | Trains all 6 models and saves weights |
+| `app/models/scenario_models.json` | Saved model weights (Logistic + Linear) |
+| `app/agents/scenario_simulation.py` | Agent that loads and uses the trained models |
