@@ -70,10 +70,12 @@ class RankedPolicy(BaseModel):
     affordability_score: float
     coverage_score: float
     utility_score: float
+    ai_score: float = 0.0
     premium_ratio: float
     coverage_gap: float
     tradeoff_summary: str
     explanation_points: List[str]
+
 
 
 class ScenarioBreakdown(BaseModel):

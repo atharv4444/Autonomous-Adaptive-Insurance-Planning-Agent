@@ -5,10 +5,14 @@ from __future__ import annotations
 from typing import List
 
 from app.models import Policy, RankedPolicy, UserProfile
+from app.agents.rl_policy_agent import RLPolicyAgent
 
 
 class PolicyEvaluationAgent:
     """Rank policies with a utility-led scoring rule."""
+
+    def __init__(self):
+        self.rl_agent = RLPolicyAgent()
 
     def rank_policies(
         self,
@@ -27,7 +31,17 @@ class PolicyEvaluationAgent:
         annual_budget = max(profile.income * 0.06, 10000)
         premium_weight = self._premium_weight(profile.affordability_band)
 
-        for policy in policies:
+        # RL State Vectorization
+        state = [
+            profile.age / 70.0,
+            profile.income / 3000000.0,
+            profile.dependents / 5.0,
+            profile.net_worth / 10000000.0,
+            risk_score / 100.0
+        ]
+        ai_scores = self.rl_agent.get_policy_rankings(state, policies)
+
+        for i, policy in enumerate(policies):
             suitability_score, suitability_reasons = self._score_suitability(profile, policy, risk_label)
             affordability_score = self._score_affordability(policy.premium, annual_budget)
             coverage_score = self._score_coverage(policy.coverage, recommended_coverage, risk_score)
@@ -58,6 +72,7 @@ class PolicyEvaluationAgent:
                         expected_loss,
                     ),
                     "explanation_points": explanation_points,
+                    "ai_score": ai_scores[i] if i < len(ai_scores) else 0.0,
                 }
             )
 
@@ -82,6 +97,7 @@ class PolicyEvaluationAgent:
                     affordability_score=float(item["affordability_score"]),
                     coverage_score=float(item["coverage_score"]),
                     utility_score=utility_score,
+                    ai_score=float(item["ai_score"]),
                     premium_ratio=float(item["premium_ratio"]),
                     coverage_gap=float(item["coverage_gap"]),
                     tradeoff_summary=str(item["tradeoff_summary"]),

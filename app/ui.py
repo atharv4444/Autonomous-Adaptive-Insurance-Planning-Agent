@@ -629,16 +629,18 @@ def render_policy_evaluation(result: RecommendationResponse) -> None:
             + ("  ✅ RECOMMENDED" if is_final else ""),
             expanded=(i == 0),
         ):
-            c1, c2, c3, c4 = st.columns(4)
+            c1, c2, c3, c4, c5 = st.columns(5)
             c1.metric("Coverage", f"₹{rp.policy.coverage:,.0f}")
             c2.metric("Annual Premium", f"₹{rp.policy.premium:,.0f}")
             c3.metric("Utility Score", f"{rp.utility_score:.1f}")
-            c4.metric("Premium/Income", f"{rp.premium_ratio:.2%}")
+            c4.metric("AI Match", f"{rp.ai_score:.1f}")
+            c5.metric("Prem/Inc", f"{rp.premium_ratio:.2%}")
 
             score_df = pd.DataFrame({
-                "Dimension": ["Utility (40%)", "Suitability (25%)", "Coverage (20%)", "Affordability (15%)"],
-                "Score": [rp.utility_score, rp.suitability_score, rp.coverage_score, rp.affordability_score],
+                "Dimension": ["Standard Utility", "Suitability", "Coverage", "Affordability", "AI/RL Match"],
+                "Score": [rp.utility_score, rp.suitability_score, rp.coverage_score, rp.affordability_score, rp.ai_score],
             })
+
             score_chart = (
                 alt.Chart(score_df)
                 .mark_bar(cornerRadiusTopLeft=6, cornerRadiusTopRight=6)
