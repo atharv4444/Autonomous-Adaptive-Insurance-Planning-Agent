@@ -31,17 +31,11 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
-
     .stApp { background: #0b0b18; }
-
-    /* collapse sidebar toggle */
     [data-testid="collapsedControl"] { display: none !important; }
     section[data-testid="stSidebar"] { display: none !important; }
-
-    /* Remove default padding */
     .block-container { padding-top: 2rem !important; }
 
-    /* Section labels */
     .section-label {
         color: #a78bfa;
         font-size: 11px;
@@ -52,8 +46,6 @@ st.markdown("""
         padding-bottom: 8px;
         border-bottom: 1px solid rgba(167,139,250,0.2);
     }
-
-    /* Card wrappers */
     .glass-card {
         background: rgba(255,255,255,0.03);
         border: 1px solid rgba(255,255,255,0.07);
@@ -61,16 +53,12 @@ st.markdown("""
         padding: 28px;
         margin-bottom: 20px;
     }
-
-    /* Metric override */
     [data-testid="metric-container"] {
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(255,255,255,0.07);
         border-radius: 14px;
         padding: 16px !important;
     }
-
-    /* Tab styling */
     .stTabs [data-baseweb="tab-list"] {
         background: rgba(255,255,255,0.03);
         border-radius: 14px;
@@ -87,12 +75,9 @@ st.markdown("""
         background: rgba(124,58,237,0.35) !important;
         color: white !important;
     }
-
-    /* Progress bars */
     .stProgress > div > div > div > div {
         background: linear-gradient(90deg, #7c3aed, #3b82f6);
     }
-
     h1, h2, h3 { color: #f4f4f4 !important; }
     p, li, label { color: rgba(255,255,255,0.8) !important; }
     .stTextInput input, .stSelectbox select, .stNumberInput input, .stTextArea textarea {
@@ -119,6 +104,33 @@ st.markdown("""
     .stDivider { border-color: rgba(255,255,255,0.07) !important; }
     .stExpander { border: 1px solid rgba(255,255,255,0.07) !important; border-radius: 12px !important; }
     code { color: #a78bfa !important; background: rgba(167,139,250,0.1) !important; }
+
+    /* ── Scenario Animations ────────────────────────────── */
+    @keyframes fall-to-bed {
+        0%   { transform: translateY(-40px) rotate(-15deg); opacity: 0; }
+        60%  { transform: translateY(4px) rotate(5deg); opacity: 1; }
+        80%  { transform: translateY(-6px) rotate(-2deg); }
+        100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    }
+    @keyframes car-crash {
+        0%   { transform: translateX(-30px); opacity: 0; }
+        50%  { transform: translateX(4px) rotate(8deg); opacity: 1; }
+        65%  { transform: translateX(-3px) rotate(-4deg); }
+        80%  { transform: translateX(2px) rotate(2deg); }
+        100% { transform: translateX(0) rotate(0deg); opacity: 1; }
+    }
+    @keyframes job-fire {
+        0%   { transform: translateY(0) scale(1); opacity: 1; }
+        40%  { transform: translateY(-10px) scale(1.08); opacity: 1; }
+        100% { transform: translateY(30px) scale(0.7); opacity: 0; }
+    }
+    @keyframes bed-bounce {
+        0%, 100% { transform: scaleY(1); }
+        50%       { transform: scaleY(0.88); }
+    }
+    .anim-medical { animation: fall-to-bed 1.1s cubic-bezier(.22,.61,.36,1) forwards; display:inline-block; }
+    .anim-accident { animation: car-crash 0.9s cubic-bezier(.22,.61,.36,1) forwards; display:inline-block; }
+    .anim-income { animation: job-fire 1.2s ease-in forwards; display:inline-block; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -134,27 +146,80 @@ POLICY_GOAL_MAP: Dict[str, str] = {
 
 RISK_COLORS = {"low": "#22c55e", "moderate": "#f59e0b", "high": "#ef4444"}
 
-SCENARIO_META: Dict[str, Dict[str, str]] = {
+SCENARIO_META: Dict[str, Dict] = {
     "medical_emergency": {
-        "icon": "🏥",
         "color": "#ef4444",
         "title": "Medical Emergency",
-        "desc": "Sudden hospitalisation, surgery, or critical illness requiring large immediate outlay.",
-        "animation": "🔴",
+        "desc": "Sudden hospitalisation, surgery, or critical illness requiring a large immediate financial outlay.",
+        "svg": """<svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Bed -->
+  <rect x="10" y="58" width="70" height="14" rx="4" fill="#ef444433" stroke="#ef4444" stroke-width="1.5"/>
+  <rect x="10" y="54" width="14" height="18" rx="3" fill="#ef444455"/>
+  <!-- Pillow -->
+  <rect x="12" y="50" width="20" height="10" rx="5" fill="#fca5a5"/>
+  <!-- Person falling -->
+  <g class="anim-medical">
+    <circle cx="45" cy="38" r="8" fill="#fbbf24"/>
+    <line x1="45" y1="46" x2="45" y2="60" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+    <line x1="45" y1="52" x2="36" y2="57" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="45" y1="52" x2="54" y2="57" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="45" y1="60" x2="38" y2="70" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="45" y1="60" x2="52" y2="70" stroke="#fbbf24" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <!-- Cross -->
+  <rect x="76" y="10" width="4" height="14" rx="2" fill="#ef4444"/>
+  <rect x="72" y="14" width="12" height="4" rx="2" fill="#ef4444"/>
+</svg>""",
+        "anim_class": "anim-medical",
     },
     "accident": {
-        "icon": "🚗",
         "color": "#f59e0b",
         "title": "Accident",
         "desc": "Road accident or physical injury causing treatment costs and potential third-party liability.",
-        "animation": "🟡",
+        "svg": """<svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Road -->
+  <rect x="0" y="65" width="90" height="8" rx="2" fill="#374151"/>
+  <rect x="20" y="68" width="15" height="3" rx="1" fill="#6b7280"/>
+  <rect x="55" y="68" width="15" height="3" rx="1" fill="#6b7280"/>
+  <!-- Car body -->
+  <g class="anim-accident">
+    <rect x="18" y="47" width="54" height="20" rx="6" fill="#f59e0b33" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="26" y="38" width="36" height="16" rx="5" fill="#f59e0b22" stroke="#f59e0b" stroke-width="1"/>
+    <circle cx="28" cy="67" r="5" fill="#1f2937" stroke="#f59e0b" stroke-width="1.5"/>
+    <circle cx="62" cy="67" r="5" fill="#1f2937" stroke="#f59e0b" stroke-width="1.5"/>
+  </g>
+  <!-- Impact sparks -->
+  <line x1="70" y1="40" x2="80" y2="30" stroke="#fcd34d" stroke-width="2" stroke-linecap="round"/>
+  <line x1="73" y1="44" x2="85" y2="38" stroke="#fcd34d" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="67" y1="36" x2="74" y2="25" stroke="#fcd34d" stroke-width="1.5" stroke-linecap="round"/>
+</svg>""",
+        "anim_class": "anim-accident",
     },
     "income_loss": {
-        "icon": "💼",
         "color": "#8b5cf6",
         "title": "Income Loss",
         "desc": "Job loss or business disruption halting regular salary and EMI payment capacity.",
-        "animation": "🟣",
+        "svg": """<svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Office building -->
+  <rect x="20" y="25" width="50" height="50" rx="4" fill="#8b5cf622" stroke="#8b5cf6" stroke-width="1.5"/>
+  <rect x="30" y="35" width="10" height="10" rx="2" fill="#8b5cf644"/>
+  <rect x="50" y="35" width="10" height="10" rx="2" fill="#8b5cf644"/>
+  <rect x="30" y="52" width="10" height="10" rx="2" fill="#8b5cf644"/>
+  <rect x="50" y="52" width="10" height="10" rx="2" fill="#8b5cf644"/>
+  <!-- Person being ejected -->
+  <g class="anim-income">
+    <circle cx="45" cy="20" r="7" fill="#a78bfa"/>
+    <line x1="45" y1="27" x2="45" y2="40" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="45" y1="32" x2="37" y2="37" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+    <line x1="45" y1="32" x2="53" y2="37" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+    <line x1="45" y1="40" x2="39" y2="50" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+    <line x1="45" y1="40" x2="51" y2="50" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <!-- X mark -->
+  <line x1="65" y1="10" x2="78" y2="23" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+  <line x1="78" y1="10" x2="65" y2="23" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+</svg>""",
+        "anim_class": "anim-income",
     },
 }
 
@@ -179,7 +244,6 @@ def render_header() -> None:
     with hcol:
         st.markdown("""
         <div style='text-align:center;padding:32px 0 24px 0;'>
-            <div style='font-size:52px;'>🛡️</div>
             <h1 style='font-size:34px;font-weight:900;margin:8px 0 4px;
                 background:linear-gradient(135deg,#a78bfa,#60a5fa,#34d399);
                 -webkit-background-clip:text;-webkit-text-fill-color:transparent;
@@ -199,164 +263,163 @@ def render_profile_form() -> None:
     with form_col:
         st.markdown('<div class="section-label">👤 User Profile</div>', unsafe_allow_html=True)
 
-        with st.form("profile_form", clear_on_submit=False):
+        # ── Profile picture + name/address ──────────────────────
+        pic_col, info_col = st.columns([1, 2])
+        with pic_col:
+            uploaded_pic = st.file_uploader(
+                "Photo", type=["jpg", "jpeg", "png"],
+                label_visibility="collapsed",
+            )
+            if uploaded_pic is not None:
+                st.session_state.profile_pic_bytes = uploaded_pic.read()
+            if st.session_state.profile_pic_bytes:
+                st.image(st.session_state.profile_pic_bytes, width=110)
+            else:
+                st.markdown("""
+                <div style='width:110px;height:110px;border-radius:50%;
+                    background:linear-gradient(135deg,#7c3aed,#3b82f6);
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:38px;'>👤</div>
+                """, unsafe_allow_html=True)
+            st.caption("Click to upload")
 
-            # ── Profile picture + name/address ──────────────────────
-            pic_col, info_col = st.columns([1, 2])
-            with pic_col:
-                uploaded_pic = st.file_uploader(
-                    "Photo", type=["jpg", "jpeg", "png"],
-                    label_visibility="collapsed",
-                )
-                if uploaded_pic is not None:
-                    st.session_state.profile_pic_bytes = uploaded_pic.read()
-                if st.session_state.profile_pic_bytes:
-                    st.image(st.session_state.profile_pic_bytes, width=110)
-                else:
-                    st.markdown("""
-                    <div style='width:110px;height:110px;border-radius:50%;
-                        background:linear-gradient(135deg,#7c3aed,#3b82f6);
-                        display:flex;align-items:center;justify-content:center;
-                        font-size:38px;'>👤</div>
-                    """, unsafe_allow_html=True)
-                st.caption("Click to upload")
+        with info_col:
+            name = st.text_input("Full Name *", value=st.session_state.user_name, placeholder="e.g. Rajesh Kumar")
+            address = st.text_area("Address", placeholder="City, State, Country", height=78)
 
-            with info_col:
-                name = st.text_input("Full Name *", placeholder="e.g. Rajesh Kumar")
-                address = st.text_area("Address", placeholder="City, State, Country", height=78)
+        st.divider()
 
-            st.divider()
+        # ── Basic Info ───────────────────────────────────────────
+        st.markdown('<div class="section-label">📋 Basic Information</div>', unsafe_allow_html=True)
+        b1, b2 = st.columns(2)
+        with b1:
+            age = st.number_input("Age", min_value=18, max_value=70, value=30, step=1)
+        with b2:
+            income = st.number_input(
+                "Annual Income (₹)",
+                min_value=0,
+                value=600000,
+                step=10000,
+                format="%d",
+                help="Total yearly income before tax in Indian Rupees",
+            )
+            if income > 0:
+                st.caption(f"₹ {income:,.0f} / year  ·  ₹ {income/12:,.0f} / month")
 
-            # ── Basic Info ───────────────────────────────────────────
-            st.markdown('<div class="section-label">📋 Basic Information</div>', unsafe_allow_html=True)
-            b1, b2 = st.columns(2)
-            with b1:
-                age = st.number_input("Age", min_value=18, max_value=70, value=30, step=1)
-            with b2:
-                income = st.number_input(
-                    "Annual Income (₹)",
-                    min_value=0,
-                    value=600000,
-                    step=10000,
-                    format="%d",
-                    help="Total yearly income before tax in Indian Rupees",
-                )
-                if income > 0:
-                    st.caption(f"₹ {income:,.0f} / year  ·  ₹ {income/12:,.0f} / month")
+        st.divider()
 
-            st.divider()
+        # ── Dependents ──────────────────────────────────────────
+        st.markdown('<div class="section-label">👨‍👩‍👧‍👦 Dependents</div>', unsafe_allow_html=True)
+        d1, d2, d3 = st.columns(3)
+        with d1:
+            parents = st.number_input(
+                "👴 Parents", min_value=0, max_value=4, value=0, step=1,
+                help="Number of financial dependent parents",
+            )
+        with d2:
+            children = st.number_input(
+                "👶 Children", min_value=0, max_value=10, value=0, step=1,
+                help="Number of dependent children",
+            )
+        with d3:
+            has_spouse = st.selectbox("💑 Spouse", options=["No", "Yes"], index=0)
 
-            # ── Dependents ──────────────────────────────────────────
-            st.markdown('<div class="section-label">👨‍👩‍👧‍👦 Dependents</div>', unsafe_allow_html=True)
-            d1, d2, d3 = st.columns(3)
-            with d1:
-                parents = st.number_input(
-                    "👴 Parents", min_value=0, max_value=4, value=0, step=1,
-                    help="Number of financial dependent parents",
-                )
-            with d2:
-                children = st.number_input(
-                    "👶 Children", min_value=0, max_value=10, value=0, step=1,
-                    help="Number of dependent children",
-                )
-            with d3:
-                has_spouse = st.selectbox("💑 Spouse", options=["No", "Yes"], index=0)
+        spouse_n = 1 if has_spouse == "Yes" else 0
+        total_dependents = parents + children + spouse_n
 
-            spouse_n = 1 if has_spouse == "Yes" else 0
-            total_dependents = parents + children + spouse_n
+        dep_parts = []
+        if parents:
+            dep_parts.append(f"{parents} parent{'s' if parents > 1 else ''}")
+        if children:
+            dep_parts.append(f"{children} child{'ren' if children > 1 else ''}")
+        if spouse_n:
+            dep_parts.append("spouse")
+        dep_label = " + ".join(dep_parts) if dep_parts else "none"
+        st.info(f"👥 Total Dependents: **{total_dependents}** ({dep_label})")
 
-            dep_parts = []
-            if parents:
-                dep_parts.append(f"{parents} parent{'s' if parents > 1 else ''}")
-            if children:
-                dep_parts.append(f"{children} child{'ren' if children > 1 else ''}")
-            if spouse_n:
-                dep_parts.append("spouse")
-            dep_label = " + ".join(dep_parts) if dep_parts else "none"
-            st.info(f"👥 Total Dependents: **{total_dependents}** ({dep_label})")
+        st.divider()
 
-            st.divider()
+        # ── Assets ──────────────────────────────────────────────
+        st.markdown('<div class="section-label">🏦 Assets</div>', unsafe_allow_html=True)
+        st.caption("Check all that apply. Leave unchecked if not applicable.")
 
-            # ── Assets ──────────────────────────────────────────────
-            st.markdown('<div class="section-label">🏦 Assets</div>', unsafe_allow_html=True)
-            st.caption("Check all that apply. Leave unchecked if not applicable.")
+        has_bank = st.checkbox("🏦 Bank / FD / Savings Account", value=True)
+        bank_bal = 0
+        if has_bank:
+            bank_bal = st.number_input("Bank Balance (₹)", min_value=0, value=0, step=10000, format="%d")
 
-            has_bank = st.checkbox("🏦 Bank / FD / Savings Account", value=True)
-            bank_bal = 0
-            if has_bank:
-                bank_bal = st.number_input("Bank Balance (₹)", min_value=0, value=0, step=10000, format="%d")
+        has_realestate = st.checkbox("🏠 Real Estate / Property")
+        realestate_val = 0
+        if has_realestate:
+            realestate_val = st.number_input("Property Market Value (₹)", min_value=0, value=0, step=100000, format="%d")
 
-            has_realestate = st.checkbox("🏠 Real Estate / Property")
-            realestate_val = 0
-            if has_realestate:
-                realestate_val = st.number_input("Property Market Value (₹)", min_value=0, value=0, step=100000, format="%d")
+        has_vehicles = st.checkbox("🚗 Vehicles")
+        vehicle_val = 0
+        if has_vehicles:
+            vc1, vc2 = st.columns(2)
+            with vc1:
+                n_vehicles = st.number_input("Number of Vehicles", min_value=1, max_value=20, value=1, step=1)
+            with vc2:
+                vehicle_val = st.number_input("Total Vehicle Value (₹)", min_value=0, value=0, step=50000, format="%d")
 
-            has_vehicles = st.checkbox("🚗 Vehicles")
-            vehicle_val = 0
-            if has_vehicles:
-                vc1, vc2 = st.columns(2)
-                with vc1:
-                    n_vehicles = st.number_input("Number of Vehicles", min_value=1, max_value=20, value=1, step=1)
-                with vc2:
-                    vehicle_val = st.number_input("Total Vehicle Value (₹)", min_value=0, value=0, step=50000, format="%d")
+        has_investments = st.checkbox("📈 Stocks / Mutual Funds / Gold / Crypto")
+        invest_val = 0
+        if has_investments:
+            invest_val = st.number_input("Total Investment Value (₹)", min_value=0, value=0, step=10000, format="%d")
 
-            has_investments = st.checkbox("📈 Stocks / Mutual Funds / Gold / Crypto")
-            invest_val = 0
-            if has_investments:
-                invest_val = st.number_input("Total Investment Value (₹)", min_value=0, value=0, step=10000, format="%d")
+        total_assets = bank_bal + realestate_val + vehicle_val + invest_val
+        if total_assets > 0:
+            st.success(f"💰 Total Assets: **₹ {total_assets:,.0f}**")
 
-            total_assets = bank_bal + realestate_val + vehicle_val + invest_val
-            if total_assets > 0:
-                st.success(f"💰 Total Assets: **₹ {total_assets:,.0f}**")
+        st.divider()
 
-            st.divider()
+        # ── Liabilities ─────────────────────────────────────────
+        st.markdown('<div class="section-label">📉 Liabilities</div>', unsafe_allow_html=True)
 
-            # ── Liabilities ─────────────────────────────────────────
-            st.markdown('<div class="section-label">📉 Liabilities</div>', unsafe_allow_html=True)
-
-            st.caption("Enter 0 if a loan does not apply to you.")
-            l1, l2, l3 = st.columns(3)
-            with l1:
-                home_loan = st.number_input(
-                    "🏠 Home Loan / Mortgage (₹)",
-                    min_value=0, value=0, step=50000, format="%d",
-                    help="Outstanding home loan or mortgage amount",
-                )
-            with l2:
-                car_loan = st.number_input(
-                    "🚗 Vehicle Loan (₹)",
-                    min_value=0, value=0, step=10000, format="%d",
-                    help="Outstanding vehicle loan amount",
-                )
-            with l3:
-                personal_loan = st.number_input(
-                    "💳 Personal / CC Debt (₹)",
-                    min_value=0, value=0, step=5000, format="%d",
-                    help="Personal loan plus credit card debt",
-                )
-
-            total_liabilities = home_loan + car_loan + personal_loan
-            if total_liabilities > 0:
-                st.warning(f"⚠️ Total Liabilities: **₹ {total_liabilities:,.0f}**")
-
-            st.divider()
-
-            # ── Insurance Policy ────────────────────────────────────
-            st.markdown('<div class="section-label">🛡️ Insurance Policy</div>', unsafe_allow_html=True)
-            insurance_policy = st.selectbox(
-                "What type of insurance are you looking for?",
-                options=["Health Insurance", "Life Insurance", "Car Insurance", "Home Insurance"],
-                help="Select the primary policy type you need.",
+        st.caption("Enter 0 if a loan does not apply to you.")
+        l1, l2, l3 = st.columns(3)
+        with l1:
+            home_loan = st.number_input(
+                "🏠 Home Loan / Mortgage (₹)",
+                min_value=0, value=0, step=50000, format="%d",
+                help="Outstanding home loan or mortgage amount",
+            )
+        with l2:
+            car_loan = st.number_input(
+                "🚗 Vehicle Loan (₹)",
+                min_value=0, value=0, step=10000, format="%d",
+                help="Outstanding vehicle loan amount",
+            )
+        with l3:
+            personal_loan = st.number_input(
+                "💳 Personal / CC Debt (₹)",
+                min_value=0, value=0, step=5000, format="%d",
+                help="Personal loan plus credit card debt",
             )
 
-            st.divider()
+        total_liabilities = home_loan + car_loan + personal_loan
+        if total_liabilities > 0:
+            st.warning(f"⚠️ Total Liabilities: **₹ {total_liabilities:,.0f}**")
 
-            # ── Submit ──────────────────────────────────────────────
-            submitted = st.form_submit_button(
-                "🚀 Run Agent Pipeline",
-                type="primary",
-                use_container_width=True,
-            )
+        st.divider()
+
+        # ── Insurance Policy ────────────────────────────────────
+        st.markdown('<div class="section-label">🛡️ Insurance Policy</div>', unsafe_allow_html=True)
+        insurance_policy = st.selectbox(
+            "What type of insurance are you looking for?",
+            options=["Health Insurance", "Life Insurance", "Car Insurance", "Home Insurance"],
+            help="Select the primary policy type you need.",
+        )
+
+        st.divider()
+
+        # ── Submit ──────────────────────────────────────────────
+        submitted = st.button(
+            "🚀 Run Agent Pipeline",
+            type="primary",
+            use_container_width=True,
+        )
+
 
         if submitted:
             mapped_goal = POLICY_GOAL_MAP[insurance_policy]
@@ -401,30 +464,36 @@ def render_results(result: RecommendationResponse, meta: Dict[str, Any]) -> None
         if st.session_state.profile_pic_bytes:
             st.image(st.session_state.profile_pic_bytes, width=60)
         else:
-            st.markdown("<div style='font-size:42px;'>👤</div>", unsafe_allow_html=True)
+            st.markdown("""
+            <div style='width:52px;height:52px;border-radius:50%;
+                background:linear-gradient(135deg,#7c3aed,#3b82f6);
+                display:flex;align-items:center;justify-content:center;
+                font-size:22px;color:white;font-weight:700;'>
+                {initials}
+            </div>
+            """.format(initials=(name[:1].upper() if name else "U")), unsafe_allow_html=True)
     with hc2:
         p = result.user_profile
         st.markdown(f"### {name}")
         st.caption(
-            f"Age {p.age}  ·  ₹{p.income:,.0f}/yr  ·  {ip}  ·  "
+            f"Age {p.age}  ·  Rs.{p.income:,.0f}/yr  ·  {ip}  ·  "
             f"{p.life_stage.replace('_',' ').title()}  ·  "
             f"{p.dependents} Dependent{'s' if p.dependents != 1 else ''}"
         )
     with hc3:
-        if st.button("✏️ Edit Profile", key="edit_btn"):
+        if st.button("Edit Profile", key="edit_btn"):
             st.session_state.result = None
             st.session_state.user_payload = None
             st.rerun()
 
     st.divider()
 
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-        "⚡ Risk Analysis",
-        "🎲 Scenario Simulation",
-        "📊 Policy Evaluation",
-        "🏆 Final Recommendation",
-        "🔍 Critic Insights",
-        "🔗 Pipeline Trace",
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "Risk Analysis",
+        "Scenario Simulation",
+        "Policy Evaluation",
+        "Final Recommendation",
+        "Critic Insights",
     ])
 
     with tab1:
@@ -437,28 +506,59 @@ def render_results(result: RecommendationResponse, meta: Dict[str, Any]) -> None
         render_final_recommendation(result)
     with tab5:
         render_critic_insights(result)
-    with tab6:
-        render_agent_trace(result)
 
+def _age_risk_explanation(age: int) -> str:
+    if age < 30:
+        return "Younger individuals (<30) have a lower risk of severe medical emergencies but may have less stability, leading to a moderate score (15)."
+    elif age < 50:
+        return "Middle-aged individuals (30-49) face increasing family responsibilities and rising health risks, leading to the highest score (20)."
+    return "Older individuals (50+) face higher health risks, but often have fewer dependents or lower income-loss impact, leading to a lower risk score (12)."
+
+def _dep_risk_explanation(deps: int) -> str:
+    if deps == 0:
+        return "With 0 dependents, you have minimal financial liability towards others, keeping your dependent risk score at 0."
+    return f"With {deps} dependent(s), you carry a higher financial responsibility in case of income loss or emergencies. Each dependent adds 10 points (max 30)."
+
+def _liability_risk_explanation(ratio: float) -> str:
+    if ratio == 0:
+        return "You have no significant liabilities (loans/debt), meaning you face 0 risk from debt obligations."
+    if ratio < 0.3:
+        return "Your liability ratio is low. A smaller portion of your income goes towards debt, so the risk score is relatively low."
+    if ratio < 0.6:
+        return "Your liability ratio is moderate. A significant portion of your income is committed to debt, leading to a moderate score."
+    return "Your liability ratio is high. A large portion of your income goes to debt, making you vulnerable to income loss, leading to a high score."
+
+def _income_risk_explanation(income: float) -> str:
+    if income < 500000:
+        return "An income below Rs. 5,000,00 leaves little buffer for sudden large expenses, representing the highest risk score (20 pts)."
+    if income < 1200000:
+        return "A moderate income between Rs. 5L-12L provides some safety net, but still limits capacity for major emergencies (12 pts)."
+    return "An income above Rs. 12,000,00 provides a strong safety net for emergencies, reducing financial risk significantly (6 pts)."
+
+def _networth_risk_explanation(nw: float) -> str:
+    if nw <= 0:
+        return "Your net worth is zero or negative. You have no assets to fall back on in emergencies, representing the highest risk (15 pts)."
+    if nw < 1000000:
+        return "Your net worth is under Rs. 10 Lakhs. You have some cushion, but a major event could wipe it out (10 pts)."
+    return "Your net worth is above Rs. 10 Lakhs. You have significant assets to cushion financial hits, reducing your risk score (5 pts)."
 
 # ─────────────────────────────────────────────────────────────
 # Tab 1 — Risk Analysis
 # ─────────────────────────────────────────────────────────────
 def render_risk_analysis(result: RecommendationResponse) -> None:
-    st.subheader("⚡ Risk Analysis")
+    st.subheader("Risk Analysis")
     st.caption(
         "Your risk score is calculated by the **Risk Analysis Agent** using a transparent "
         "rule-based model. Each factor contributes to the 0–100 risk score."
     )
 
-    r_color = RISK_COLORS.get(result.risk_label, "#fff")
     m1, m2, m3 = st.columns(3)
     m1.metric("Risk Score", f"{result.risk_score:.1f} / 100")
     m2.metric("Risk Label", result.risk_label.upper())
     m3.metric("Confidence", f"{result.confidence_score:.1f}%")
 
     st.divider()
-    st.markdown("#### 📐 Score Breakdown — How Each Factor Contributes")
+    st.markdown("#### Score Breakdown")
 
     p = result.user_profile
     age_score = 15 if p.age < 30 else 20 if p.age < 50 else 12
@@ -475,12 +575,11 @@ def render_risk_analysis(result: RecommendationResponse) -> None:
             f"Age {p.age}",
             f"{p.dependents} dependents",
             f"Ratio {p.liability_ratio:.2f}",
-            f"₹{p.income:,.0f}",
-            f"₹{p.net_worth:,.0f}",
+            f"Rs.{p.income:,.0f}",
+            f"Rs.{p.net_worth:,.0f}",
         ],
     })
 
-    # Grouped bar chart: your score vs max
     base = alt.Chart(breakdown)
     your_bars = base.mark_bar(cornerRadiusTopLeft=6, cornerRadiusTopRight=6).encode(
         x=alt.X("Your Score:Q", scale=alt.Scale(domain=[0, 32])),
@@ -501,33 +600,71 @@ def render_risk_analysis(result: RecommendationResponse) -> None:
         text="Your Score:Q",
     )
     chart = (max_bars + your_bars + score_labels).properties(
-        height=240, title="Risk Score by Factor (purple = your score, faint = maximum possible)"
+        height=240, title="Risk score by factor (solid = your score, faint = maximum possible)"
     )
     st.altair_chart(chart, use_container_width=True)
 
-    # Donut-style gauge via progress bar
-    st.markdown("#### 🎯 Overall Risk Gauge")
+    # Overall gauge
     gauge_pct = result.risk_score / 100
-    st.progress(float(min(gauge_pct, 1.0)), text=f"Risk Score {result.risk_score:.1f}/100 — **{result.risk_label.upper()}**")
+    st.progress(float(min(gauge_pct, 1.0)), text=f"Risk Score {result.risk_score:.1f}/100 — {result.risk_label.upper()}")
 
     # Factor details table
-    st.markdown("#### 📋 Factor Details")
+    st.markdown("#### Factor Details")
     disp = breakdown[["Factor", "Your Score", "Max Possible", "Your Value"]].copy()
     disp["Your Score"] = disp["Your Score"].map(lambda x: f"{x:.1f}")
-    st.dataframe(disp, use_container_width=True, hide_index=True)
+    disp["Max Possible"] = disp["Max Possible"].astype(str)
+    st.dataframe(
+        disp,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "Factor": st.column_config.TextColumn("Factor", width="medium"),
+            "Your Score": st.column_config.TextColumn("Your Score", width="small"),
+            "Max Possible": st.column_config.TextColumn("Max Possible", width="small"),
+            "Your Value": st.column_config.TextColumn("Your Value", width="large"),
+        }
+    )
+
+    # Per-factor explanations
+    st.markdown("#### Why These Scores?")
+    factor_explanations = [
+        (
+            "Age", age_score, 20,
+            _age_risk_explanation(p.age),
+        ),
+        (
+            "Dependents", dep_score, 30,
+            _dep_risk_explanation(p.dependents),
+        ),
+        (
+            "Liability Ratio", lib_score, 25,
+            _liability_risk_explanation(p.liability_ratio),
+        ),
+        (
+            "Income", inc_score, 20,
+            _income_risk_explanation(p.income),
+        ),
+        (
+            "Net Worth", nw_score, 15,
+            _networth_risk_explanation(p.net_worth),
+        ),
+    ]
+    for factor_name, score, max_score, explanation in factor_explanations:
+        with st.expander(f"{factor_name} — {score:.1f} / {max_score} pts"):
+            st.markdown(explanation)
 
     # Formula
-    with st.expander("📖 Risk Score Formula"):
+    with st.expander("Risk Score Formula"):
         st.code(f"""
 Risk Score = Age Score + Dependent Score + Liability Score + Income Score + Net Worth Score
 
-  Age Score       = {age_score}   →  <30: 15 pts | 30–49: 20 pts | 50+: 12 pts
-  Dependent Score = {dep_score}   →  dependents × 10 (max 30)
-  Liability Score = {lib_score:.2f}  →  liability_ratio × 25 (max 25)
-  Income Score    = {inc_score}   →  <5L: 20 pts | 5L–12L: 12 pts | >12L: 6 pts
-  Net Worth Score = {nw_score}   →  ≤0: 15 pts | <10L: 10 pts | ≥10L: 5 pts
-  ─────────────────────────────────────────────────────
-  Total           = {result.risk_score:.2f} / 100  →  {result.risk_label.upper()}
+  Age Score       = {age_score}   ->  <30: 15 pts | 30-49: 20 pts | 50+: 12 pts
+  Dependent Score = {dep_score}   ->  dependents x 10 (max 30)
+  Liability Score = {lib_score:.2f}  ->  liability_ratio x 25 (max 25)
+  Income Score    = {inc_score}   ->  <5L: 20 pts | 5L-12L: 12 pts | >12L: 6 pts
+  Net Worth Score = {nw_score}   ->  <=0: 15 pts | <10L: 10 pts | >=10L: 5 pts
+  ---------------------------------------------------
+  Total           = {result.risk_score:.2f} / 100  ->  {result.risk_label.upper()}
         """, language=None)
 
 
@@ -535,33 +672,34 @@ Risk Score = Age Score + Dependent Score + Liability Score + Income Score + Net 
 # Tab 2 — Scenario Simulation
 # ─────────────────────────────────────────────────────────────
 def render_scenario_simulation(result: RecommendationResponse) -> None:
-    st.subheader("🎲 Scenario Simulation")
+    st.subheader("Scenario Simulation")
     st.caption(
-        "The **Scenario Simulation Agent** uses **trained Logistic Regression** (probability) "
-        "and **Linear Regression** (cost) models — learned from 3,000 synthetic actuarial samples — "
+        "The **Scenario Simulation Agent** uses trained Logistic Regression (probability) "
+        "and Linear Regression (cost) models — learned from 3,000 synthetic actuarial samples — "
         "to predict personalised financial risk for your exact profile."
     )
 
-
-    st.metric("💥 Total Expected Annual Loss", f"₹ {result.expected_loss:,.0f}",
+    st.metric("Total Expected Annual Loss", f"Rs. {result.expected_loss:,.0f}",
               help="Weighted sum of expected losses across all simulated scenarios.")
     st.divider()
 
     for item in result.scenario_breakdown:
         m = SCENARIO_META.get(item.scenario_name, {
-            "icon": "⚠️", "color": "#fff",
-            "title": item.scenario_name, "desc": "", "animation": "⚪",
+            "svg": "", "color": "#fff",
+            "title": item.scenario_name, "desc": "", "anim_class": "",
         })
 
         st.markdown(f"""
         <div style='background:rgba(255,255,255,0.03);
             border:1px solid {m["color"]}30;border-left:4px solid {m["color"]};
             border-radius:16px;padding:24px;margin-bottom:8px;'>
-            <div style='display:flex;align-items:center;gap:16px;margin-bottom:16px;'>
-                <div style='font-size:44px;'>{m["icon"]}</div>
+            <div style='display:flex;align-items:center;gap:24px;margin-bottom:16px;'>
+                <div style='flex-shrink:0;'>{m["svg"]}</div>
                 <div>
-                    <div style='color:{m["color"]};font-size:20px;font-weight:700;'>{m["title"]}</div>
-                    <div style='color:rgba(255,255,255,0.45);font-size:13px;max-width:480px;'>{m["desc"]}</div>
+                    <div style='color:{m["color"]};font-size:20px;font-weight:700;
+                        letter-spacing:0.3px;'>{m["title"]}</div>
+                    <div style='color:rgba(255,255,255,0.45);font-size:13px;
+                        max-width:480px;margin-top:4px;'>{m["desc"]}</div>
                 </div>
             </div>
         </div>
@@ -569,8 +707,8 @@ def render_scenario_simulation(result: RecommendationResponse) -> None:
 
         sc1, sc2, sc3 = st.columns(3)
         sc1.metric("Probability", f"{item.probability:.1%}")
-        sc2.metric("Estimated Cost", f"₹{item.cost:,.0f}")
-        sc3.metric("Expected Impact", f"₹{item.expected_impact:,.0f}")
+        sc2.metric("Estimated Cost", f"Rs.{item.cost:,.0f}")
+        sc3.metric("Expected Impact", f"Rs.{item.expected_impact:,.0f}")
 
         st.progress(
             float(min(item.probability, 1.0)),
@@ -578,7 +716,7 @@ def render_scenario_simulation(result: RecommendationResponse) -> None:
         )
 
         if item.reasons:
-            with st.expander("Why this probability? (AI Reasoning)"):
+            with st.expander("Why this probability? — AI Reasoning"):
                 for reason in item.reasons:
                     st.markdown(f"- {reason}")
 
@@ -592,13 +730,12 @@ def render_scenario_simulation(result: RecommendationResponse) -> None:
 
         st.divider()
 
-
     # Summary comparison chart
-    st.markdown("#### 📊 Scenario Impact Comparison")
+    st.markdown("#### Scenario Impact Comparison")
     sdf = pd.DataFrame([{
         "Scenario": SCENARIO_META.get(s.scenario_name, {}).get("title", s.scenario_name),
-        "Expected Impact (₹)": s.expected_impact,
-        "Full Cost if it Happens (₹)": s.cost,
+        "Expected Impact (Rs.)": s.expected_impact,
+        "Full Cost if it Happens (Rs.)": s.cost,
         "Probability (%)": round(s.probability * 100, 2),
     } for s in result.scenario_breakdown])
 
@@ -730,24 +867,24 @@ def render_final_recommendation(result: RecommendationResponse) -> None:
 # Tab 5 — Critic Insights
 # ─────────────────────────────────────────────────────────────
 def render_critic_insights(result: RecommendationResponse) -> None:
-    st.subheader("🔍 Critic Agent Insights")
+    st.subheader("Critic Agent Insights")
     st.caption(
         "The **Critic Agent** independently validates the top-ranked policies, "
         "flags issues, and reranks when a safer alternative exists."
     )
 
     if not result.critic_issues:
-        st.success("✅ Critic found no issues.")
+        st.success("Critic found no issues.")
         return
 
     for issue in result.critic_issues:
         low = issue.lower()
         if "no major issues" in low:
-            st.success(f"✅ {issue}")
+            st.success(issue)
         elif any(kw in low for kw in ["underinsured", "overpriced", "mismatch"]):
-            st.error(f"🚨 {issue}")
+            st.error(issue)
         else:
-            st.warning(f"⚠️ {issue}")
+            st.warning(issue)
 
     top_name = result.top_policies[0].policy.policy_name if result.top_policies else ""
     final_name = result.final_recommendation.policy.policy_name
@@ -755,70 +892,13 @@ def render_critic_insights(result: RecommendationResponse) -> None:
     st.divider()
     if top_name and top_name != final_name:
         st.warning(
-            f"🔄 **Reranked by Critic:** `{top_name}` was swapped for `{final_name}` "
-            "due to detected issues."
+            f"Reranked by Critic: '{top_name}' was swapped for '{final_name}' due to detected issues."
         )
     else:
-        st.info("✅ Critic accepted the top-ranked policy without reranking.")
+        st.info("Critic accepted the top-ranked policy without reranking.")
 
 
-# ─────────────────────────────────────────────────────────────
-# Tab 6 — Pipeline Trace
-# ─────────────────────────────────────────────────────────────
-def render_agent_trace(result: RecommendationResponse) -> None:
-    st.subheader("🔗 Agent Pipeline Trace")
-    st.caption("Live execution log — every agent step with inputs, outputs, and timing.")
-
-    if not result.agent_trace:
-        st.warning("No trace data available.")
-        return
-
-    total_ms = sum(e.duration_ms for e in result.agent_trace)
-    st.metric("⏱ Total Pipeline Execution Time", f"{total_ms:.1f} ms")
-    st.divider()
-
-    ICONS = {
-        "UserProfilingAgent": "👤",
-        "RiskAnalysisAgent": "⚡",
-        "ScenarioSimulationAgent": "🎲",
-        "PolicyEvaluationAgent": "📊",
-        "CriticAgent": "🔍",
-        "MemoryStore": "💾",
-    }
-
-    for i, entry in enumerate(result.agent_trace, 1):
-        icon = ICONS.get(entry.agent_name, "🤖")
-        with st.expander(
-            f"Step {i}: {icon} {entry.agent_name}  —  {entry.duration_ms:.1f} ms",
-            expanded=False,
-        ):
-            c1, c2 = st.columns(2)
-            with c1:
-                st.markdown("**📥 Input Received:**")
-                st.code(entry.input_summary, language=None)
-            with c2:
-                st.markdown("**📤 Output Produced:**")
-                st.code(entry.output_summary, language=None)
-
-    # Execution time chart
-    st.divider()
-    st.markdown("#### ⏱ Execution Time per Agent")
-    tdf = pd.DataFrame([{
-        "Agent": e.agent_name.replace("Agent", "").replace("Store", " Store"),
-        "Duration (ms)": e.duration_ms,
-    } for e in result.agent_trace])
-    tchart = (
-        alt.Chart(tdf)
-        .mark_bar(cornerRadiusTopLeft=6, cornerRadiusTopRight=6)
-        .encode(
-            x=alt.X("Duration (ms):Q"),
-            y=alt.Y("Agent:N", sort=None, title=None),
-            color=alt.Color("Duration (ms):Q", scale=alt.Scale(scheme="purples"), legend=None),
-            tooltip=["Agent:N", "Duration (ms):Q"],
-        )
-        .properties(height=220)
-    )
-    st.altair_chart(tchart, use_container_width=True)
+# Pipeline trace removed per user request
 
 
 # ─────────────────────────────────────────────────────────────
