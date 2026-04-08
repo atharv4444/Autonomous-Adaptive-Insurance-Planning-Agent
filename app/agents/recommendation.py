@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import time
 from typing import List
 
@@ -19,6 +20,7 @@ from app.models import (
     UserInput,
 )
 from app.utils.helpers import load_policies
+from app.llm.gemini_explainer import generate_explanation_with_gemini, gemini_key_present
 
 
 class RecommendationAgent:
@@ -148,12 +150,34 @@ class RecommendationAgent:
     ) -> str:
         """Create a richer multi-agent explanation for the final recommendation."""
         critic_summary = critic_issues[0] if critic_issues else "The critic found no major issues."
-        # TODO: Replace template explanations with LLM-generated rationale when available.
-        # TODO: Add advanced ML-based recommendation blending once more training data exists.
-        return (
+
+        template = (
             f"{best_policy.policy.policy_name} is recommended because it balances high coverage with an acceptable premium "
             f"for a {risk_label} risk profile. "
             f"The scenario simulation estimated an expected loss of {expected_loss:.0f}, which was included in the utility-based ranking. "
             f"Its premium-to-income ratio is {best_policy.premium_ratio:.2%} and the tradeoff remains favorable because {best_policy.tradeoff_summary} "
             f"Critic review: {critic_summary}"
         )
+
+        if not gemini_key_present():
+            return template
+
+        model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+        prompt = (
+            "You are an insurance planning assistant. Write a concise, user-friendly explanation (2-5 sentences) "
+            "for why the recommended policy was chosen. Avoid disclaimers. Don't mention internal agent names. "
+            "Use INR currency symbol ₹ where relevant.\n\n"
+            f"Recommended policy: {best_policy.policy.policy_name}\n"
+            f"Policy type: {best_policy.policy.policy_type}\n"
+            f"Coverage: ₹{best_policy.policy.coverage:,.0f}\n"
+            f"Annual premium: ₹{best_policy.policy.premium:,.0f}\n"
+            f"Premium-to-income ratio: {best_policy.premium_ratio:.2%}\n"
+            f"Coverage gap: ₹{best_policy.coverage_gap:,.0f}\n"
+            f"Risk label: {risk_label}\n"
+            f"Expected loss (simulated): ₹{expected_loss:,.0f}\n"
+            f"Tradeoff summary: {best_policy.tradeoff_summary}\n"
+            f"Critic note: {critic_summary}\n"
+        )
+
+        llm_text = generate_explanation_with_gemini(prompt=prompt, model=model)
+        return llm_text or template
