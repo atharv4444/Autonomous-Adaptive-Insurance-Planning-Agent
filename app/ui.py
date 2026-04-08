@@ -314,20 +314,26 @@ def render_profile_form() -> None:
             # ── Liabilities ─────────────────────────────────────────
             st.markdown('<div class="section-label">📉 Liabilities</div>', unsafe_allow_html=True)
 
-            has_homeloan = st.checkbox("🏠 Home Loan / Mortgage")
-            home_loan = 0
-            if has_homeloan:
-                home_loan = st.number_input("Home Loan Outstanding (₹)", min_value=0, value=0, step=50000, format="%d")
-
-            has_carloan = st.checkbox("🚗 Vehicle Loan")
-            car_loan = 0
-            if has_carloan:
-                car_loan = st.number_input("Vehicle Loan Outstanding (₹)", min_value=0, value=0, step=10000, format="%d")
-
-            has_personal = st.checkbox("💳 Personal Loan / Credit Card Debt")
-            personal_loan = 0
-            if has_personal:
-                personal_loan = st.number_input("Personal Loan + CC Debt (₹)", min_value=0, value=0, step=5000, format="%d")
+            st.caption("Enter 0 if a loan does not apply to you.")
+            l1, l2, l3 = st.columns(3)
+            with l1:
+                home_loan = st.number_input(
+                    "🏠 Home Loan / Mortgage (₹)",
+                    min_value=0, value=0, step=50000, format="%d",
+                    help="Outstanding home loan or mortgage amount",
+                )
+            with l2:
+                car_loan = st.number_input(
+                    "🚗 Vehicle Loan (₹)",
+                    min_value=0, value=0, step=10000, format="%d",
+                    help="Outstanding vehicle loan amount",
+                )
+            with l3:
+                personal_loan = st.number_input(
+                    "💳 Personal / CC Debt (₹)",
+                    min_value=0, value=0, step=5000, format="%d",
+                    help="Personal loan plus credit card debt",
+                )
 
             total_liabilities = home_loan + car_loan + personal_loan
             if total_liabilities > 0:

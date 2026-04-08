@@ -11,9 +11,14 @@ class UserProfilingAgent:
     def build_profile(self, user_input: UserInput) -> UserProfile:
         """Derive simple, explainable profile attributes from inputs."""
         net_worth = user_input.assets - user_input.liabilities
-        liability_ratio = (
-            user_input.liabilities / user_input.income if user_input.income > 0 else 1.0
-        )
+        if user_input.income > 0:
+            liability_ratio = user_input.liabilities / user_input.income
+        elif user_input.liabilities == 0:
+            # No income AND no liabilities → neutral, no debt pressure
+            liability_ratio = 0.0
+        else:
+            # No income but has liabilities → very high risk, cap at 2.0
+            liability_ratio = 2.0
 
         if user_input.income < 500000:
             affordability_band = "low"
