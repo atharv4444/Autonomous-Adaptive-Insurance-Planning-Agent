@@ -11,6 +11,7 @@ from pydantic import ValidationError
 
 from app.main import recommender
 from app.models import RecommendationResponse, UserInput
+import app.llm.client as llm_client
 
 
 # ─────────────────────────────────────────────────────────────
@@ -242,14 +243,21 @@ for key, default in [
 def render_header() -> None:
     _, hcol, _ = st.columns([1, 2, 1])
     with hcol:
-        st.markdown("""
+        ai_active = llm_client.is_available()
+        badge_color = "#22c55e" if ai_active else "#6b7280"
+        badge_text = "AI Active — Gemini" if ai_active else "Local Mode"
+        st.markdown(f"""
         <div style='text-align:center;padding:32px 0 24px 0;'>
             <h1 style='font-size:34px;font-weight:900;margin:8px 0 4px;
                 background:linear-gradient(135deg,#a78bfa,#60a5fa,#34d399);
                 -webkit-background-clip:text;-webkit-text-fill-color:transparent;
                 background-clip:text;'>InsuraX</h1>
             <p style='color:rgba(255,255,255,0.35);font-size:12px;letter-spacing:4px;
-                text-transform:uppercase;margin:0;'>Autonomous Adaptive Planning Agent</p>
+                text-transform:uppercase;margin:0 0 12px;'>Autonomous Adaptive Planning Agent</p>
+            <span style='background:{badge_color}22;border:1px solid {badge_color}55;
+                color:{badge_color};font-size:11px;font-weight:600;
+                letter-spacing:1.5px;text-transform:uppercase;
+                padding:4px 12px;border-radius:20px;'>{badge_text}</span>
         </div>
         """, unsafe_allow_html=True)
 
