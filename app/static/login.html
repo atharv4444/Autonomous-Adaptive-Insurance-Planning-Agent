@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsureAI — Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a1a;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ───── Animated Background Gradient ───── */
+        .bg-gradient {
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(72, 0, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(0, 210, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(255, 0, 128, 0.1) 0%, transparent 50%),
+                linear-gradient(160deg, #0a0a1a 0%, #0d0d2b 50%, #0a0a1a 100%);
+            z-index: 0;
+            animation: gradientShift 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes gradientShift {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(30deg); }
+        }
+
+        /* ───── Particle Canvas ───── */
+        #particles {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+        }
+
+        /* ───── Floating Orbs ───── */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 1;
+            animation: orbFloat 6s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 300px;
+            height: 300px;
+            background: rgba(72, 0, 255, 0.3);
+            top: -100px;
+            left: -50px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 250px;
+            height: 250px;
+            background: rgba(0, 210, 255, 0.25);
+            bottom: -80px;
+            right: -60px;
+            animation-delay: -3s;
+        }
+
+        .orb-3 {
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 0, 128, 0.2);
+            top: 50%;
+            left: 60%;
+            animation-delay: -1.5s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -20px) scale(1.05); }
+            66% { transform: translate(-20px, 15px) scale(0.95); }
+        }
+
+        /* ───── Grid Overlay ───── */
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            background-image: 
+                linear-gradient(rgba(72, 0, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(72, 0, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridScroll 20s linear infinite;
+        }
+
+        @keyframes gridScroll {
+            0% { transform: perspective(500px) rotateX(15deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(15deg) translateY(60px); }
+        }
+
+        /* ───── Login Container ───── */
+        .login-container {
+            position: relative;
+            z-index: 10;
+            width: 420px;
+            animation: containerSlideUp 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes containerSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(60px) scale(0.95);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ───── Glass Card ───── */
+        .glass-card {
+            background: rgba(15, 15, 40, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 48px 40px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 80px rgba(72, 0, 255, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: box-shadow 0.4s ease;
+        }
+
+        .glass-card:hover {
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 120px rgba(72, 0, 255, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        /* ───── Logo / Title ───── */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, #4800ff, #00d2ff);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            animation: logoPulse 3s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(72, 0, 255, 0.3);
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(72, 0, 255, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(72, 0, 255, 0.5), 0 0 80px rgba(0, 210, 255, 0.2); }
+        }
+
+        .logo-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff, #a78bfa, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .logo-subtitle {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 6px;
+        }
+
+        /* ───── Input Groups ───── */
+        .input-group {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .input-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper .icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            opacity: 0.4;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 2;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px 14px 48px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            color: #ffffff;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .input-wrapper input:focus {
+            border-color: rgba(72, 0, 255, 0.6);
+            background: rgba(72, 0, 255, 0.06);
+            box-shadow: 0 0 20px rgba(72, 0, 255, 0.15), inset 0 0 20px rgba(72, 0, 255, 0.05);
+        }
+
+        .input-wrapper input:focus + .glow-line {
+            opacity: 1;
+            width: 100%;
+        }
+
+        .input-wrapper:has(input:focus) .icon {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .glow-line {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #4800ff, #00d2ff, transparent);
+            border-radius: 2px;
+            opacity: 0;
+            transition: all 0.5s ease;
+        }
+
+        /* ───── Login Button ───── */
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            color: #ffffff;
+            background: linear-gradient(135deg, #4800ff, #0066ff, #00d2ff);
+            background-size: 200% 200%;
+            animation: btnGradient 4s ease infinite;
+            box-shadow: 0 4px 20px rgba(72, 0, 255, 0.3);
+            transition: transform 0.2s, box-shadow 0.3s;
+            margin-top: 8px;
+        }
+
+        @keyframes btnGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(72, 0, 255, 0.5), 0 0 60px rgba(0, 210, 255, 0.15);
+        }
+
+        .login-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .login-btn .btn-shine {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.5s;
+        }
+
+        .login-btn:hover .btn-shine {
+            left: 100%;
+        }
+
+        /* ───── Error Message ───── */
+        .error-msg {
+            text-align: center;
+            color: #ff4d6a;
+            font-size: 13px;
+            margin-top: 16px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .error-msg.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ───── Shake Animation ───── */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+            20%, 40%, 60%, 80% { transform: translateX(6px); }
+        }
+
+        .shake {
+            animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        }
+
+        /* ───── Success State ───── */
+        .login-btn.success {
+            background: linear-gradient(135deg, #00c853, #00e676) !important;
+            animation: none;
+        }
+
+        /* ───── Loading Spinner ───── */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ───── Footer ───── */
+        .footer-text {
+            text-align: center;
+            margin-top: 24px;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
+        .footer-text a {
+            color: rgba(72, 0, 255, 0.7);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-text a:hover {
+            color: #00d2ff;
+        }
+
+        /* ───── Success Overlay ───── */
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0);
+            pointer-events: none;
+            transition: background 0.6s;
+        }
+
+        .success-overlay.active {
+            background: rgba(0, 0, 0, 0.85);
+            pointer-events: all;
+        }
+
+        .success-content {
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .success-overlay.active .success-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00c853, #00e676);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            box-shadow: 0 0 40px rgba(0, 200, 83, 0.4);
+        }
+
+        .success-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            color: #ffffff;
+            letter-spacing: 2px;
+        }
+
+        .redirect-text {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        /* ───── Scanline Effect ───── */
+        .scanline {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.03) 2px,
+                rgba(0, 0, 0, 0.03) 4px
+            );
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background layers -->
+    <div class="bg-gradient"></div>
+    <canvas id="particles"></canvas>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="grid-overlay"></div>
+    <div class="scanline"></div>
+
+    <!-- Login Card -->
+    <div class="login-container">
+        <div class="glass-card" id="loginCard">
+            <div class="logo-section">
+                <div class="logo-icon">🛡️</div>
+                <div class="logo-title">INSURE AI</div>
+                <div class="logo-subtitle">Autonomous Planning Agent</div>
+            </div>
+
+            <form id="loginForm" autocomplete="off">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <span class="icon">👤</span>
+                        <input type="text" id="username" name="username" placeholder="Enter your username" required />
+                        <div class="glow-line"></div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <span class="icon">🔒</span>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required />
+                        <div class="glow-line"></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span class="btn-shine"></span>
+                    <span id="btnText">Initialize</span>
+                </button>
+
+                <div class="error-msg" id="errorMsg">⚠ Invalid credentials. Try again.</div>
+            </form>
+
+            <div class="footer-text">
+                Demo credentials: <strong>admin</strong> / <strong>insurance123</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-content">
+            <div class="success-checkmark">✓</div>
+            <div class="success-text">ACCESS GRANTED</div>
+            <div class="redirect-text">Initializing agent dashboard...</div>
+        </div>
+    </div>
+
+    <script>
+        // ───── Particle System ─────
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const PARTICLE_COUNT = 80;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.5 + 0.1;
+                this.hue = Math.random() > 0.5 ? 260 : 190; // purple or cyan
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${this.hue}, 100%, 70%, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            particles.push(new Particle());
+        }
+
+        function drawLines() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(72, 0, 255, ${0.08 * (1 - dist / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            drawLines();
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // ───── Login Logic ─────
+        const VALID_USER = 'admin';
+        const VALID_PASS = 'insurance123';
+
+        const form = document.getElementById('loginForm');
+        const loginCard = document.getElementById('loginCard');
+        const loginBtn = document.getElementById('loginBtn');
+        const btnText = document.getElementById('btnText');
+        const errorMsg = document.getElementById('errorMsg');
+        const successOverlay = document.getElementById('successOverlay');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            // Hide previous error
+            errorMsg.classList.remove('visible');
+            loginCard.classList.remove('shake');
+
+            // Show loading
+            btnText.innerHTML = '<span class="spinner"></span>';
+            loginBtn.disabled = true;
+
+            setTimeout(() => {
+                if (username === VALID_USER && password === VALID_PASS) {
+                    // Success
+                    loginBtn.classList.add('success');
+                    btnText.textContent = '✓ SUCCESS';
+                    setTimeout(() => {
+                        successOverlay.classList.add('active');
+                        setTimeout(() => {
+                            window.location.href = 'http://localhost:8501';
+                        }, 1800);
+                    }, 500);
+                } else {
+                    // Failure
+                    loginCard.classList.add('shake');
+                    errorMsg.classList.add('visible');
+                    btnText.textContent = 'INITIALIZE';
+                    loginBtn.disabled = false;
+                }
+            }, 1200);
+        });
+    </script>
+</body>
+</html>

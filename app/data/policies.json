@@ -5,7 +5,7 @@
     "coverage": 8000000,
     "premium": 32000,
     "target_profile": ["family_protection", "family_builder", "moderate", "high", "has_dependents"],
-    "notes": "Balanced term life plan focused on protecting family income."
+    "notes": "Balanced term life plan focused on protecting family income against untimely death."
   },
   {
     "policy_name": "HealthGuard Plus",
@@ -13,7 +13,7 @@
     "coverage": 1500000,
     "premium": 18000,
     "target_profile": ["health_security", "early_career", "moderate", "low"],
-    "notes": "Affordable health-focused plan for salaried users seeking medical protection."
+    "notes": "Affordable health-focused plan for salaried users seeking medical protection up to ₹15L."
   },
   {
     "policy_name": "WealthProtect Elite",
@@ -21,7 +21,7 @@
     "coverage": 12000000,
     "premium": 90000,
     "target_profile": ["wealth_protection", "pre_retirement", "high"],
-    "notes": "Higher-premium long-term protection for asset-preservation goals."
+    "notes": "Higher-premium long-term protection for asset-preservation and estate planning."
   },
   {
     "policy_name": "FamilyFirst Income Cover",
@@ -29,7 +29,7 @@
     "coverage": 6000000,
     "premium": 28000,
     "target_profile": ["family_protection", "family_builder", "high", "has_dependents"],
-    "notes": "Income replacement oriented cover for households with dependents and liabilities."
+    "notes": "Income replacement cover for households with dependents and outstanding liabilities."
   },
   {
     "policy_name": "SmartSaver Benefit Plan",
@@ -37,7 +37,7 @@
     "coverage": 4000000,
     "premium": 22000,
     "target_profile": ["tax_savings", "early_career", "low", "moderate"],
-    "notes": "Savings-linked policy that combines tax benefit with moderate protection."
+    "notes": "Savings-linked policy combining Section 80C tax benefit with moderate life protection."
   },
   {
     "policy_name": "Balanced Protect Combo",
@@ -45,6 +45,78 @@
     "coverage": 7000000,
     "premium": 35000,
     "target_profile": ["family_protection", "health_security", "family_builder", "moderate", "has_dependents"],
-    "notes": "Hybrid option balancing life and medical security with moderate premiums."
+    "notes": "Hybrid life + health cover balancing protection and medical security at moderate premiums."
+  },
+  {
+    "policy_name": "ComprehensiveCare Health",
+    "policy_type": "health",
+    "coverage": 3000000,
+    "premium": 26000,
+    "target_profile": ["health_security", "family_builder", "moderate", "high", "has_dependents"],
+    "notes": "Family floater health plan covering hospitalisation, day care, and critical illness up to ₹30L."
+  },
+  {
+    "policy_name": "CriticalShield Rider",
+    "policy_type": "critical_illness",
+    "coverage": 2000000,
+    "premium": 15000,
+    "target_profile": ["health_security", "pre_retirement", "high"],
+    "notes": "Lump-sum payout on diagnosis of 40+ critical illnesses including cancer, stroke, and heart disease."
+  },
+  {
+    "policy_name": "DriveSecure Comprehensive",
+    "policy_type": "motor_comprehensive",
+    "coverage": 1200000,
+    "premium": 12000,
+    "target_profile": ["car_insurance", "early_career", "family_builder", "low", "moderate"],
+    "notes": "Comprehensive car insurance covering own damage, third-party liability, theft, and natural calamities."
+  },
+  {
+    "policy_name": "SuperCover Motor Plus",
+    "policy_type": "motor_comprehensive",
+    "coverage": 2500000,
+    "premium": 22000,
+    "target_profile": ["car_insurance", "family_builder", "pre_retirement", "moderate", "high"],
+    "notes": "Premium vehicle cover including zero-depreciation, roadside assistance, engine protection up to ₹25L."
+  },
+  {
+    "policy_name": "ValueDrive Third Party",
+    "policy_type": "motor_third_party",
+    "coverage": 750000,
+    "premium": 4500,
+    "target_profile": ["car_insurance", "early_career", "low"],
+    "notes": "Mandatory third-party motor cover at the lowest premium tier — ideal for budget-conscious buyers."
+  },
+  {
+    "policy_name": "HomeShield Standard",
+    "policy_type": "home_structure",
+    "coverage": 5000000,
+    "premium": 8000,
+    "target_profile": ["home_insurance", "family_builder", "pre_retirement", "low", "moderate", "has_dependents"],
+    "notes": "Home structure insurance covering fire, flood, earthquake, and burglary up to ₹50L."
+  },
+  {
+    "policy_name": "HomeSafe Complete",
+    "policy_type": "home_comprehensive",
+    "coverage": 10000000,
+    "premium": 18000,
+    "target_profile": ["home_insurance", "pre_retirement", "moderate", "high"],
+    "notes": "All-in-one home plan covering structure + contents including electronics, jewellery, and valuables up to ₹1Cr."
+  },
+  {
+    "policy_name": "RentGuard Tenant Cover",
+    "policy_type": "home_tenant",
+    "coverage": 2000000,
+    "premium": 5500,
+    "target_profile": ["home_insurance", "early_career", "low", "moderate"],
+    "notes": "Tenant's liability and contents insurance for rented homes — covers theft, fire, damage to contents."
+  },
+  {
+    "policy_name": "PremierLife Platinum",
+    "policy_type": "whole_life",
+    "coverage": 15000000,
+    "premium": 120000,
+    "target_profile": ["wealth_protection", "family_protection", "pre_retirement", "high"],
+    "notes": "Ultra-premium whole life policy for high-net-worth individuals focused on estate building and legacy planning."
   }
 ]

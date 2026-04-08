@@ -7,7 +7,7 @@ from typing import Dict, List, Literal
 from pydantic import BaseModel, Field, field_validator
 
 
-InsuranceGoal = Literal["family_protection", "health_security", "wealth_protection", "tax_savings"]
+InsuranceGoal = Literal["family_protection", "health_security", "wealth_protection", "tax_savings", "car_insurance", "home_insurance"]
 
 
 class UserInput(BaseModel):
@@ -19,6 +19,12 @@ class UserInput(BaseModel):
     assets: float = Field(default=0, ge=0)
     liabilities: float = Field(default=0, ge=0)
     insurance_goal: InsuranceGoal = "family_protection"
+
+    @field_validator("dependents", mode="before")
+    @classmethod
+    def clamp_dependents(cls, value: object) -> int:
+        """Clamp dependents to the valid range 0-10."""
+        return max(0, min(10, int(value) if value is not None else 0))
 
     @field_validator("income", "assets", "liabilities", mode="before")
     @classmethod
@@ -101,6 +107,15 @@ class MemorySnapshot(BaseModel):
     previous_recommendations: List[Dict[str, object]]
 
 
+class AgentTraceEntry(BaseModel):
+    """Record of a single agent execution in the pipeline."""
+
+    agent_name: str
+    input_summary: str
+    output_summary: str
+    duration_ms: float
+
+
 class RecommendationResponse(BaseModel):
     """Final output returned by the recommender."""
 
@@ -116,3 +131,4 @@ class RecommendationResponse(BaseModel):
     confidence_score: float
     memory_snapshot: MemorySnapshot
     explanation: str
+    agent_trace: List[AgentTraceEntry] = Field(default_factory=list)

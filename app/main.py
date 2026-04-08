@@ -4,13 +4,18 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
 from typing import Any, Dict
 
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.agents.recommendation import RecommendationAgent
 from app.models import RecommendationResponse, UserInput
 
+
+STATIC_DIR = Path(__file__).resolve().parent / "static"
 
 app = FastAPI(
     title="Autonomous Adaptive Insurance Planning Agent",
@@ -18,10 +23,20 @@ app = FastAPI(
     version="0.1.0",
 )
 
+# Serve static files (login page assets)
+app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
 recommender = RecommendationAgent()
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
+def login_page() -> HTMLResponse:
+    """Serve the animated login page as the root."""
+    login_html = STATIC_DIR / "login.html"
+    return HTMLResponse(content=login_html.read_text(encoding="utf-8"))
+
+
+@app.get("/health")
 def healthcheck() -> Dict[str, str]:
     """Simple health endpoint."""
     return {"message": "Insurance planning agent is running."}
