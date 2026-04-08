@@ -17,8 +17,16 @@ from app.models import RecommendationResponse, UserInput
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
+# Load local env vars from .env if present (kept out of git via .gitignore).
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except Exception:
+    pass
+
 app = FastAPI(
-    title="Autonomous Adaptive Insurance Planning Agent",
+    title="InsuraX",
     description="A lightweight student prototype for personalized insurance recommendations.",
     version="0.1.0",
 )

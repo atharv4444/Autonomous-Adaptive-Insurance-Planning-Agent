@@ -81,6 +81,17 @@ streamlit run app/ui.py
 
 Open [http://localhost:8501](http://localhost:8501) in your browser.
 
+## Optional: Automate explanations with Gemini (API key)
+
+The recommender can **optionally** generate the `explanation` field using the Gemini API.
+Nothing is stored in the repo — it activates only when you set an environment variable.
+
+```bash
+export GEMINI_API_KEY="YOUR_KEY_HERE"
+# Optional (defaults shown)
+export GEMINI_MODEL="gemini-2.5-flash"
+```
+
 ### API Example
 
 `POST /recommend`

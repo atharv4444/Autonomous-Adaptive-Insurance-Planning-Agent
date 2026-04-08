@@ -17,7 +17,7 @@ from app.models import RecommendationResponse, UserInput
 # Page Config
 # ─────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="InsureAI — Autonomous Planning Agent",
+    page_title="InsuraX — Autonomous Planning Agent",
     page_icon="🛡️",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -247,7 +247,7 @@ def render_header() -> None:
             <h1 style='font-size:34px;font-weight:900;margin:8px 0 4px;
                 background:linear-gradient(135deg,#a78bfa,#60a5fa,#34d399);
                 -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-                background-clip:text;'>InsureAI</h1>
+                background-clip:text;'>InsuraX</h1>
             <p style='color:rgba(255,255,255,0.35);font-size:12px;letter-spacing:4px;
                 text-transform:uppercase;margin:0;'>Autonomous Adaptive Planning Agent</p>
         </div>
@@ -729,28 +729,6 @@ def render_scenario_simulation(result: RecommendationResponse) -> None:
             )
 
         st.divider()
-
-    # Summary comparison chart
-    st.markdown("#### Scenario Impact Comparison")
-    sdf = pd.DataFrame([{
-        "Scenario": SCENARIO_META.get(s.scenario_name, {}).get("title", s.scenario_name),
-        "Expected Impact (Rs.)": s.expected_impact,
-        "Full Cost if it Happens (Rs.)": s.cost,
-        "Probability (%)": round(s.probability * 100, 2),
-    } for s in result.scenario_breakdown])
-
-    bars = alt.Chart(sdf).mark_bar(cornerRadiusTopLeft=8, cornerRadiusTopRight=8).encode(
-        x=alt.X("Scenario:N", title=None),
-        y=alt.Y("Expected Impact (₹):Q"),
-        color=alt.Color(
-            "Scenario:N",
-            scale=alt.Scale(range=["#ef4444", "#f59e0b", "#8b5cf6"]),
-            legend=None,
-        ),
-        tooltip=["Scenario:N", "Expected Impact (₹):Q", "Full Cost if it Happens (₹):Q", "Probability (%):Q"],
-    ).properties(height=280)
-    st.altair_chart(bars, use_container_width=True)
-
 
 # ─────────────────────────────────────────────────────────────
 # Tab 3 — Policy Evaluation
