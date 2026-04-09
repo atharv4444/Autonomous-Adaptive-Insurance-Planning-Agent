@@ -411,6 +411,47 @@ def render_profile_form() -> None:
 
         st.divider()
 
+        # ── Health Profile ─────────────────────────────────────
+        st.markdown('<div class="section-label">🩺 Health Profile</div>', unsafe_allow_html=True)
+        st.caption("Your health profile directly impacts your insurance risk assessment and premium calculations.")
+
+        h1, h2 = st.columns(2)
+        with h1:
+            is_smoker = st.selectbox(
+                "🚬 Smoking Status",
+                options=["Non-Smoker", "Smoker"],
+                index=0,
+                help="Regular tobacco/cigarette use significantly increases health insurance risk.",
+            )
+        with h2:
+            alcohol_level = st.selectbox(
+                "🍷 Alcohol Consumption",
+                options=["None", "Occasional", "Moderate", "Heavy"],
+                index=0,
+                help="Frequency of alcohol consumption affects health risk scoring.",
+            )
+
+        has_severe_health = st.checkbox(
+            "⚠️ Pre-existing severe health conditions",
+            value=False,
+            help="E.g. diabetes, heart disease, cancer, chronic kidney disease, or similar.",
+        )
+
+        # Build a health summary
+        health_parts = []
+        if is_smoker == "Smoker":
+            health_parts.append("🚬 Smoker")
+        if alcohol_level != "None":
+            health_parts.append(f"🍷 {alcohol_level} drinker")
+        if has_severe_health:
+            health_parts.append("⚠️ Severe condition")
+        if not health_parts:
+            st.success("✅ No significant health risk factors detected.")
+        else:
+            st.warning(f"Health Risk Indicators: {' · '.join(health_parts)}")
+
+        st.divider()
+
         # ── Insurance Policy ────────────────────────────────────
         st.markdown('<div class="section-label">🛡️ Insurance Policy</div>', unsafe_allow_html=True)
         insurance_policy = st.selectbox(
@@ -431,6 +472,7 @@ def render_profile_form() -> None:
 
         if submitted:
             mapped_goal = POLICY_GOAL_MAP[insurance_policy]
+            alcohol_map = {"None": "none", "Occasional": "occasional", "Moderate": "moderate", "Heavy": "heavy"}
             payload: Dict[str, Any] = {
                 "age": int(age),
                 "income": float(income),
@@ -438,6 +480,9 @@ def render_profile_form() -> None:
                 "assets": float(total_assets),
                 "liabilities": float(total_liabilities),
                 "insurance_goal": mapped_goal,
+                "is_smoker": is_smoker == "Smoker",
+                "alcohol_consumption": alcohol_map[alcohol_level],
+                "has_severe_health_issues": has_severe_health,
             }
             with st.spinner("⚙️ Running the multi-agent insurance planning pipeline…"):
                 try:
@@ -517,15 +562,15 @@ def render_results(result: RecommendationResponse, meta: Dict[str, Any]) -> None
 
 def _age_risk_explanation(age: int) -> str:
     if age < 30:
-        return "Younger individuals (<30) have a lower risk of severe medical emergencies but may have less stability, leading to a moderate score (15)."
+        return "Younger individuals (<30) have a lower risk of severe medical emergencies but may have less stability, leading to a moderate score (10 pts)."
     elif age < 50:
-        return "Middle-aged individuals (30-49) face increasing family responsibilities and rising health risks, leading to the highest score (20)."
-    return "Older individuals (50+) face higher health risks, but often have fewer dependents or lower income-loss impact, leading to a lower risk score (12)."
+        return "Middle-aged individuals (30-49) face increasing family responsibilities and rising health risks, leading to the highest score (15 pts)."
+    return "Older individuals (50+) face higher health risks, but often have fewer dependents or lower income-loss impact, leading to a lower risk score (8 pts)."
 
 def _dep_risk_explanation(deps: int) -> str:
     if deps == 0:
         return "With 0 dependents, you have minimal financial liability towards others, keeping your dependent risk score at 0."
-    return f"With {deps} dependent(s), you carry a higher financial responsibility in case of income loss or emergencies. Each dependent adds 10 points (max 30)."
+    return f"With {deps} dependent(s), you carry a higher financial responsibility in case of income loss or emergencies. Each dependent adds 7 points (max 20)."
 
 def _liability_risk_explanation(ratio: float) -> str:
     if ratio == 0:
@@ -538,17 +583,41 @@ def _liability_risk_explanation(ratio: float) -> str:
 
 def _income_risk_explanation(income: float) -> str:
     if income < 500000:
-        return "An income below Rs. 5,000,00 leaves little buffer for sudden large expenses, representing the highest risk score (20 pts)."
+        return "An income below Rs. 5,00,000 leaves little buffer for sudden large expenses, representing the highest risk score (15 pts)."
     if income < 1200000:
-        return "A moderate income between Rs. 5L-12L provides some safety net, but still limits capacity for major emergencies (12 pts)."
-    return "An income above Rs. 12,000,00 provides a strong safety net for emergencies, reducing financial risk significantly (6 pts)."
+        return "A moderate income between Rs. 5L-12L provides some safety net, but still limits capacity for major emergencies (9 pts)."
+    return "An income above Rs. 12,00,000 provides a strong safety net for emergencies, reducing financial risk significantly (4 pts)."
 
 def _networth_risk_explanation(nw: float) -> str:
     if nw <= 0:
-        return "Your net worth is zero or negative. You have no assets to fall back on in emergencies, representing the highest risk (15 pts)."
+        return "Your net worth is zero or negative. You have no assets to fall back on in emergencies, representing the highest risk (10 pts)."
     if nw < 1000000:
-        return "Your net worth is under Rs. 10 Lakhs. You have some cushion, but a major event could wipe it out (10 pts)."
-    return "Your net worth is above Rs. 10 Lakhs. You have significant assets to cushion financial hits, reducing your risk score (5 pts)."
+        return "Your net worth is under Rs. 10 Lakhs. You have some cushion, but a major event could wipe it out (7 pts)."
+    return "Your net worth is above Rs. 10 Lakhs. You have significant assets to cushion financial hits, reducing your risk score (3 pts)."
+
+def _health_risk_explanation(p: object) -> str:
+    parts = []
+    if p.is_smoker:
+        parts.append("**Smoking (+10 pts):** Tobacco use is the single largest modifiable health risk factor. Smokers face 2-4x higher risk of heart disease and are more likely to require costly treatments.")
+    else:
+        parts.append("**Smoking (+0 pts):** You are a non-smoker, which significantly reduces your baseline health risk.")
+
+    alcohol_desc = {
+        "none": "**Alcohol (+0 pts):** No alcohol consumption — no additional risk from this factor.",
+        "occasional": "**Alcohol (+2 pts):** Occasional drinking adds a small health risk factor.",
+        "moderate": "**Alcohol (+5 pts):** Moderate alcohol consumption increases risk of liver-related diseases and adds a meaningful risk contribution.",
+        "heavy": "**Alcohol (+8 pts):** Heavy alcohol consumption significantly increases the likelihood of liver disease, accidents, and chronic health issues.",
+    }
+    parts.append(alcohol_desc.get(p.alcohol_consumption, alcohol_desc["none"]))
+
+    if p.has_severe_health_issues:
+        parts.append("**Pre-existing Conditions (+7 pts):** Severe conditions (e.g. diabetes, heart disease, cancer) sharply increase both the probability and cost of future medical events.")
+    else:
+        parts.append("**Pre-existing Conditions (+0 pts):** No severe conditions reported — this keeps your health risk contribution low.")
+
+    total = p.health_risk_score
+    parts.append(f"\n**Total Health Risk Score: {total:.1f} / 25 pts**")
+    return "\n\n".join(parts)
 
 # ─────────────────────────────────────────────────────────────
 # Tab 1 — Risk Analysis
@@ -569,28 +638,40 @@ def render_risk_analysis(result: RecommendationResponse) -> None:
     st.markdown("#### Score Breakdown")
 
     p = result.user_profile
-    age_score = 15 if p.age < 30 else 20 if p.age < 50 else 12
-    dep_score = min(p.dependents * 10, 30)
-    lib_score = round(min(p.liability_ratio * 25, 25), 2)
-    inc_score = 20 if p.income < 500000 else 12 if p.income < 1200000 else 6
-    nw_score = 15 if p.net_worth <= 0 else 10 if p.net_worth < 1000000 else 5
+    age_score = 10 if p.age < 30 else 15 if p.age < 50 else 8
+    dep_score = min(p.dependents * 7, 20)
+    lib_score = round(min(p.liability_ratio * 15, 15), 2)
+    inc_score = 15 if p.income < 500000 else 9 if p.income < 1200000 else 4
+    nw_score = 10 if p.net_worth <= 0 else 7 if p.net_worth < 1000000 else 3
+    health_score = p.health_risk_score
+
+    # Health value label for display
+    health_parts = []
+    if p.is_smoker:
+        health_parts.append("Smoker")
+    if p.alcohol_consumption != "none":
+        health_parts.append(f"{p.alcohol_consumption.title()} alcohol")
+    if p.has_severe_health_issues:
+        health_parts.append("Severe condition")
+    health_value = ", ".join(health_parts) if health_parts else "Healthy"
 
     breakdown = pd.DataFrame({
-        "Factor": ["Age", "Dependents", "Liability Ratio", "Income", "Net Worth"],
-        "Your Score": [age_score, dep_score, lib_score, inc_score, nw_score],
-        "Max Possible": [20, 30, 25, 20, 15],
+        "Factor": ["Age", "Dependents", "Liability Ratio", "Income", "Net Worth", "Health Profile"],
+        "Your Score": [age_score, dep_score, lib_score, inc_score, nw_score, health_score],
+        "Max Possible": [15, 20, 15, 15, 10, 25],
         "Your Value": [
             f"Age {p.age}",
             f"{p.dependents} dependents",
             f"Ratio {p.liability_ratio:.2f}",
             f"Rs.{p.income:,.0f}",
             f"Rs.{p.net_worth:,.0f}",
+            health_value,
         ],
     })
 
     base = alt.Chart(breakdown)
     your_bars = base.mark_bar(cornerRadiusTopLeft=6, cornerRadiusTopRight=6).encode(
-        x=alt.X("Your Score:Q", scale=alt.Scale(domain=[0, 32])),
+        x=alt.X("Your Score:Q", scale=alt.Scale(domain=[0, 26])),
         y=alt.Y("Factor:N", sort=None, title=None),
         color=alt.value("#7c3aed"),
         tooltip=["Factor:N", "Your Score:Q", "Max Possible:Q", "Your Value:N"],
@@ -637,24 +718,28 @@ def render_risk_analysis(result: RecommendationResponse) -> None:
     st.markdown("#### Why These Scores?")
     factor_explanations = [
         (
-            "Age", age_score, 20,
+            "Age", age_score, 15,
             _age_risk_explanation(p.age),
         ),
         (
-            "Dependents", dep_score, 30,
+            "Dependents", dep_score, 20,
             _dep_risk_explanation(p.dependents),
         ),
         (
-            "Liability Ratio", lib_score, 25,
+            "Liability Ratio", lib_score, 15,
             _liability_risk_explanation(p.liability_ratio),
         ),
         (
-            "Income", inc_score, 20,
+            "Income", inc_score, 15,
             _income_risk_explanation(p.income),
         ),
         (
-            "Net Worth", nw_score, 15,
+            "Net Worth", nw_score, 10,
             _networth_risk_explanation(p.net_worth),
+        ),
+        (
+            "Health Profile", health_score, 25,
+            _health_risk_explanation(p),
         ),
     ]
     for factor_name, score, max_score, explanation in factor_explanations:
@@ -664,13 +749,14 @@ def render_risk_analysis(result: RecommendationResponse) -> None:
     # Formula
     with st.expander("Risk Score Formula"):
         st.code(f"""
-Risk Score = Age Score + Dependent Score + Liability Score + Income Score + Net Worth Score
+Risk Score = Age + Dependents + Liability + Income + Net Worth + Health Profile
 
-  Age Score       = {age_score}   ->  <30: 15 pts | 30-49: 20 pts | 50+: 12 pts
-  Dependent Score = {dep_score}   ->  dependents x 10 (max 30)
-  Liability Score = {lib_score:.2f}  ->  liability_ratio x 25 (max 25)
-  Income Score    = {inc_score}   ->  <5L: 20 pts | 5L-12L: 12 pts | >12L: 6 pts
-  Net Worth Score = {nw_score}   ->  <=0: 15 pts | <10L: 10 pts | >=10L: 5 pts
+  Age Score       = {age_score}   ->  <30: 10 pts | 30-49: 15 pts | 50+: 8 pts
+  Dependent Score = {dep_score}   ->  dependents x 7 (max 20)
+  Liability Score = {lib_score:.2f}  ->  liability_ratio x 15 (max 15)
+  Income Score    = {inc_score}   ->  <5L: 15 pts | 5L-12L: 9 pts | >12L: 4 pts
+  Net Worth Score = {nw_score}   ->  <=0: 10 pts | <10L: 7 pts | >=10L: 3 pts
+  Health Score    = {health_score:.1f}  ->  Smoker: 10 | Alcohol: 0-8 | Severe: 7 (max 25)
   ---------------------------------------------------
   Total           = {result.risk_score:.2f} / 100  ->  {result.risk_label.upper()}
         """, language=None)
@@ -847,6 +933,7 @@ def render_final_recommendation(result: RecommendationResponse) -> None:
     st.divider()
     st.success(f"🤖 **Agent Explanation:** {result.explanation}")
     st.caption(f"📝 Notes: {fp.policy.notes}")
+    st.info(result.regulatory_note)
 
 
 # ─────────────────────────────────────────────────────────────

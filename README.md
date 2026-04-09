@@ -134,7 +134,8 @@ Sample response shape:
   "critic_issues": [
     "No major issues detected by the critic."
   ],
-  "explanation": "SecureLife Shield is recommended because ..."
+  "explanation": "SecureLife Shield is recommended because ...",
+  "regulatory_note": "IRDAI note: this project is an academic prototype ..."
 }
 ```
 
@@ -202,3 +203,24 @@ The code is structured so the following can be added later without major refacto
 
 - This is a student MVP, not a production insurance advisory system.
 - The policies are dummy examples for academic demonstration only.
+
+## IRDAI Note
+
+For this project, the safest place to implement IRDAI language is as a disclosure layer rather than as a hard-coded claim of compliance.
+
+- `README.md`: explain that the system is an academic prototype and that any real deployment in India must be reviewed against current IRDAI rules.
+- API response: include a `regulatory_note` field so downstream clients can show the disclosure consistently.
+- Streamlit UI: display the note beside the final recommendation so users see it where the recommendation is consumed.
+- Critic Agent: keep full regulation-aware validation as a future extension, because the current dataset uses dummy policies and does not yet contain insurer registration, filing, or product-wording metadata.
+
+Suggested wording implemented in the app:
+
+- The prototype is not an IRDAI-registered insurer, intermediary, web aggregator, or licensed advisory platform.
+- Recommendations are illustrative only and should not be treated as solicitation or final insurance advice.
+- A production version should use current product disclosures from IRDAI-registered insurers and be reviewed against the IRDAI Insurance Advertisements and Disclosure Regulations, 2021 and the Master Circular on Protection of Policyholders' Interests, 2024 issued on June 19, 2024.
+
+Official references:
+
+- [IRDAI Updated Regulations](https://irdai.gov.in/updated-regulations)
+- [IRDAI registered life insurers](https://irdai.gov.in/en/insurers/life-insurers)
+- [IRDAI product and policyholder resources](https://irdai.gov.in/life-insurance-products)

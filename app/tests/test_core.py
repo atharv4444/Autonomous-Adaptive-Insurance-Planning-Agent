@@ -214,6 +214,7 @@ def test_recommendation_response_includes_agentic_fields() -> None:
     assert result.critic_issues
     assert result.memory_snapshot.profile_signature
     assert "recommended because" in result.explanation
+    assert "IRDAI" in result.regulatory_note
 
 
 def test_high_liability_user_has_non_low_risk() -> None:

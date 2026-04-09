@@ -12,20 +12,12 @@ import logging
 import time
 from typing import Any, Dict, List, Optional
 
-from app.agents.critic import CriticAgent
-from app.agents.policy_evaluation import PolicyEvaluationAgent
-from app.agents.scenario_simulation import ScenarioSimulationAgent
-from app.agents.risk_analysis import RiskAnalysisAgent
-from app.agents.user_profiling import UserProfilingAgent
-from app.memory.memory_store import MemoryStore
 from app.models import (
-    AgentTraceEntry,
-    MemorySnapshot,
-    RankedPolicy,
     RecommendationResponse,
     UserInput,
     UserProfile,
 )
+from app.agents.goal_planner import GoalPlannerAgent
 from app.utils.helpers import load_policies
 import app.llm.client as llm
 from app.llm.prompts import (
@@ -40,20 +32,17 @@ _MAX_REACT_STEPS = 10
 
 
 class RecommendationAgent:
-    """Coordinate the end-to-end recommendation flow with inter-agent tracing."""
+    """Coordinate the end-to-end recommendation flow by delegating to the GoalPlannerAgent."""
 
     def __init__(self) -> None:
-        self.user_profiler = UserProfilingAgent()
-        self.risk_analyzer = RiskAnalysisAgent()
-        self.scenario_simulator = ScenarioSimulationAgent()
-        self.policy_evaluator = PolicyEvaluationAgent()
-        self.critic = CriticAgent()
-        self.memory_store = MemoryStore()
+        self.planner = GoalPlannerAgent()
 
     # ------------------------------------------------------------------
     # Public entry point
     # ------------------------------------------------------------------
     def recommend(self, user_input: UserInput) -> RecommendationResponse:
+        """Execute the goal-based plan via the Planner Agent."""
+        return self.planner.execute_plan(user_input)
         """Run the full multi-agent pipeline and return a traced recommendation."""
         if llm.is_available():
             try:

@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
 
 InsuranceGoal = Literal["family_protection", "health_security", "wealth_protection", "tax_savings", "car_insurance", "home_insurance"]
+
+
+AlcoholConsumption = Literal["none", "occasional", "moderate", "heavy"]
 
 
 class UserInput(BaseModel):
@@ -19,6 +22,11 @@ class UserInput(BaseModel):
     assets: float = Field(default=0, ge=0)
     liabilities: float = Field(default=0, ge=0)
     insurance_goal: InsuranceGoal = "family_protection"
+
+    # ── Health Profile (optional, defaults keep backward compatibility) ──
+    is_smoker: bool = Field(default=False, description="Whether the user is a regular smoker")
+    alcohol_consumption: AlcoholConsumption = Field(default="none", description="Alcohol consumption frequency")
+    has_severe_health_issues: bool = Field(default=False, description="Pre-existing severe health conditions (e.g. diabetes, heart disease, cancer)")
 
     @field_validator("dependents", mode="before")
     @classmethod
@@ -48,6 +56,12 @@ class UserProfile(BaseModel):
     affordability_band: Literal["low", "medium", "high"]
     life_stage: Literal["early_career", "family_builder", "pre_retirement"]
     liability_ratio: float
+
+    # ── Health Profile ──
+    is_smoker: bool = False
+    alcohol_consumption: AlcoholConsumption = "none"
+    has_severe_health_issues: bool = False
+    health_risk_score: float = 0.0
 
 
 class Policy(BaseModel):
@@ -135,4 +149,5 @@ class RecommendationResponse(BaseModel):
     confidence_score: float
     memory_snapshot: MemorySnapshot
     explanation: str
+    regulatory_note: str
     agent_trace: List[AgentTraceEntry] = Field(default_factory=list)
