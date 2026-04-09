@@ -27,7 +27,11 @@ except Exception:
 
 app = FastAPI(
     title="InsuraX",
-    description="A lightweight student prototype for personalized insurance recommendations.",
+    description=(
+        "A lightweight student prototype for personalized insurance recommendations. "
+        "For academic use only; any real deployment in India should be reviewed against current IRDAI "
+        "regulations and product disclosures."
+    ),
     version="0.1.0",
 )
 
@@ -70,6 +74,16 @@ def run_cli() -> None:
         default="family_protection",
         choices=["family_protection", "health_security", "wealth_protection", "tax_savings"],
     )
+    # Health profile flags
+    parser.add_argument("--smoker", action="store_true", default=False, help="User is a regular smoker")
+    parser.add_argument(
+        "--alcohol",
+        type=str,
+        default="none",
+        choices=["none", "occasional", "moderate", "heavy"],
+        help="Alcohol consumption frequency",
+    )
+    parser.add_argument("--severe-health", action="store_true", default=False, help="Has severe pre-existing health conditions")
     args = parser.parse_args()
 
     payload = UserInput(
@@ -79,6 +93,9 @@ def run_cli() -> None:
         assets=args.assets,
         liabilities=args.liabilities,
         insurance_goal=args.insurance_goal,
+        is_smoker=args.smoker,
+        alcohol_consumption=args.alcohol,
+        has_severe_health_issues=args.severe_health,
     )
 
     result = recommender.recommend(payload)
