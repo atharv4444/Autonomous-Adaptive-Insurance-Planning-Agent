@@ -155,3 +155,4 @@ cython_debug/
 
 # Project specific
 app/data/memory_store.json
+.vercel
