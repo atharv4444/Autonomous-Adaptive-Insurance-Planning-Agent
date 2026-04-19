@@ -34,11 +34,13 @@
 - Saves user profiles and past recommendations to a local JSON file
 - Supports lightweight recall for demo continuity and explainability
 
-### Goal Planner Agent
+- Executes a structured plan: Profiling -> Risk Analysis -> Simulation -> Evaluation -> Critique -> Memory -> Adaptive Learning
 
-- Goal-based agent that coordinates all sub-agents and orchestrates the overall decision-making process
-- Maintains the primary objective: "Find the most suitable policy available for the customer"
-- Executes a structured plan: Profiling -> Risk Analysis -> Simulation -> Evaluation -> Critique -> Memory
+### Adaptive Learner Agent
+
+- Monitors the decision pipeline for 'mistakes' (e.g., Critic reranks)
+- Performs real-time gradient descent updates on the Neural Network weights
+- Closes the loop between advisor execution and environment feedback
 
 ### Recommendation Agent
 

@@ -15,6 +15,13 @@ A lightweight final-year project prototype that collects user financial inputs, 
 - Basic tests for the core recommendation flow
 - Clear extension points for future multi-agent and LLM upgrades
 
+## ⚠️ Autonomy Reality Check
+
+It is important to understand the nature of autonomy in this system:
+
+- **Learning Autonomy (Implemented)**: The system is now a closed-loop agentic platform. It uses a custom-built Neural Network (NumPy-based DQN) to influence rankings and employs an **Adaptive Learner Agent** to update its weights in real-time. If the Critic Agent overrides a recommendation, the system treats it as a 'mistake', penalizing the incorrect choice and rewarding the validated one.
+- **LLM as a reasoning communicator**: The LLM remains the **reasoning communicator**, explaining the logic behind both the deterministic rules and the adaptive AI scores.
+
 ## Versioning & Prototypes
 
 This project uses a branched versioning strategy to preserve the evolution of the autonomous agent:
@@ -69,17 +76,18 @@ uvicorn app.main:app --reload
 
 Open [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) for the interactive Swagger UI.
 
-## Run The Streamlit UI
+## Run The Web UI
 
-For a graphical demonstration with charts and interactive forms:
+For a seamless, rich graphical demonstration using a modern glassmorphic dashboard:
 
 ```bash
-# Set PYTHONPATH to the root directory
-export PYTHONPATH=$PYTHONPATH:.
-streamlit run app/ui.py
+# In another terminal window
+cd frontend
+npm install
+npm run dev
 ```
 
-Open [http://localhost:8501](http://localhost:8501) in your browser.
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## Optional: Automate explanations with Gemini (API key)
 

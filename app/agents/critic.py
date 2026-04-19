@@ -30,10 +30,19 @@ class CriticAgent:
                 best_candidate = candidate
                 best_evaluation = evaluation
 
+        confidence = round(max(0.0, min(100.0, 100 - best_evaluation["penalty"])), 2)
+        
+        # Rejection Mechanism: If the best policy still has too many critical issues, trigger replanning
+        requires_replanning = False
+        if confidence < 50.0 or best_evaluation["critical_issues"] >= 2:
+            requires_replanning = True
+            best_evaluation["issues"].append("[CRITICAL REJECTION]: Output is suboptimal. Triggering re-planning.")
+
         return CriticResult(
             validated_policy=best_candidate,
             issues=best_evaluation["issues"],
-            confidence_score=round(max(0.0, min(100.0, 100 - best_evaluation["penalty"])), 2),
+            confidence_score=confidence,
+            requires_replanning=requires_replanning
         )
 
     def _evaluate_candidate(

@@ -28,6 +28,39 @@ class NumPyNeuralNetwork:
         self.probabilities = self.sigmoid(self.z2)
         return self.probabilities
 
+    def update(self, state, action_idx, reward, learning_rate=0.01):
+        """
+        Performs one step of manual backpropagation to learn from a specific decision.
+        """
+        # 1. Forward pass to ensure internal states (a1, z1, etc) are set for this state
+        probs = self.forward(state)
+        
+        # 2. Target calculation (mapping reward to 0-1 range)
+        normalized_reward = 1 / (1 + np.exp(-reward/5.0))
+        
+        # 3. Output layer gradient
+        d_p = probs.copy()
+        d_p[action_idx] -= normalized_reward
+        d_z2 = d_p * (probs * (1 - probs))
+        
+        # 4. Weights 2 gradient
+        dW2 = np.outer(self.a1, d_z2)
+        db2 = d_z2
+        
+        # 5. Hidden layer gradient
+        da1 = np.dot(d_z2, self.W2.T)
+        dz1 = da1 * (1 - self.a1**2)
+        dW1 = np.outer(state, dz1)
+        db1 = dz1
+        
+        # 6. Apply updates
+        self.W2 -= learning_rate * dW2
+        self.b2 -= learning_rate * db2
+        self.W1 -= learning_rate * dW1
+        self.b1 -= learning_rate * db1
+        
+        return np.mean((probs[action_idx] - normalized_reward)**2)
+
     def save(self, path):
         data = {
             "W1": self.W1.tolist(),

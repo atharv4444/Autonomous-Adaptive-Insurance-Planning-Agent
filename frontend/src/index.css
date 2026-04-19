@@ -1,0 +1,884 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+
+@theme {
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body { min-height: 100vh; background: #050505; color: #e2e8f0; }
+#root { min-height: 100vh; }
+
+/* ── Grain ── */
+.grain-overlay {
+  position: fixed; inset: 0; pointer-events: none; z-index: 9999; opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat; background-size: 128px 128px;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.04); border-radius: 2px; }
+
+/* ── Keyframes ── */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 12px rgba(99,102,241,0.15), 0 0 40px rgba(99,102,241,0.04); }
+  50% { box-shadow: 0 0 24px rgba(99,102,241,0.3), 0 0 56px rgba(99,102,241,0.08); }
+}
+@keyframes ring-breathe {
+  0%, 100% { filter: drop-shadow(0 0 8px var(--ring-glow)); }
+  50% { filter: drop-shadow(0 0 18px var(--ring-glow)); }
+}
+@keyframes neon-dot {
+  0%, 100% { box-shadow: 0 0 4px var(--dot-color), 0 0 10px var(--dot-color); }
+  50% { box-shadow: 0 0 8px var(--dot-color), 0 0 18px var(--dot-color); }
+}
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes counter-tick {
+  0%, 100% { text-shadow: 0 0 15px rgba(255,255,255,0.06); }
+  50% { text-shadow: 0 0 30px rgba(255,255,255,0.12); }
+}
+
+.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.animate-ring-breathe { animation: ring-breathe 2.8s ease-in-out infinite; }
+.animate-neon-dot { animation: neon-dot 2s ease-in-out infinite; }
+.animate-counter-tick { animation: counter-tick 2s ease-in-out infinite; }
+
+/* ── Sidebar system ── */
+.sidebar-container {
+  width: 220px;
+  flex-shrink: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+  z-index: 50;
+  background: rgba(8, 8, 8, 0.6);
+  backdrop-filter: blur(50px) saturate(110%);
+  -webkit-backdrop-filter: blur(50px) saturate(110%);
+  border-right: 1px solid rgba(255,255,255,0.03);
+}
+
+.sidebar-section-label {
+  padding: 0 12px;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.08);
+}
+
+.sidebar-nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.25);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom: 2px;
+}
+.sidebar-nav-item:hover {
+  color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.015);
+}
+
+.sidebar-nav-active {
+  color: rgba(255,255,255,0.9) !important;
+}
+.sidebar-active-highlight {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.sidebar-nav-indent {
+  padding-left: 22px;
+  font-size: 13px;
+}
+
+.sidebar-nav-muted {
+  color: rgba(255,255,255,0.1);
+}
+.sidebar-nav-muted:hover {
+  color: rgba(255,255,255,0.2);
+}
+
+.sidebar-nav-disabled {
+  color: rgba(255,255,255,0.08);
+  cursor: not-allowed;
+}
+.sidebar-nav-disabled:hover {
+  background: none;
+  color: rgba(255,255,255,0.08);
+}
+
+.sidebar-new-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  background: rgba(99,102,241,0.06);
+  border: 1px solid rgba(99,102,241,0.12);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.sidebar-new-btn:hover {
+  background: rgba(99,102,241,0.1);
+  border-color: rgba(99,102,241,0.2);
+  color: rgba(255,255,255,0.7);
+}
+
+/* Keep old class for backward compat */
+.glass-sidebar {
+  background: rgba(8, 8, 8, 0.6);
+  backdrop-filter: blur(50px) saturate(110%);
+  -webkit-backdrop-filter: blur(50px) saturate(110%);
+  border-right: 1px solid rgba(255,255,255,0.03);
+}
+
+.glass-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.022), rgba(255,255,255,0.008));
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(255,255,255,0.02) inset,
+    0 -1px 0 rgba(0,0,0,0.2) inset;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-card:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.032), rgba(255,255,255,0.014));
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255,255,255,0.03) inset,
+    0 -1px 0 rgba(0,0,0,0.2) inset;
+}
+
+.glass-strong {
+  background: linear-gradient(145deg, rgba(255,255,255,0.022), rgba(255,255,255,0.008));
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* Dimension card — etched metal feel */
+.dimension-card {
+  background: linear-gradient(160deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005));
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  box-shadow:
+    0 2px 16px rgba(0,0,0,0.4),
+    0 1px 0 rgba(255,255,255,0.02) inset;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dimension-card:hover {
+  background: linear-gradient(160deg, rgba(255,255,255,0.04), rgba(255,255,255,0.012));
+  box-shadow:
+    0 6px 28px rgba(0,0,0,0.5),
+    0 1px 0 rgba(255,255,255,0.04) inset;
+  transform: translateY(-1px);
+}
+
+/* ── Gradients ── */
+.gradient-text {
+  background: linear-gradient(135deg, #c4b5fd, #818cf8, #60a5fa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.gradient-brand { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.gradient-brand-vivid {
+  background: linear-gradient(135deg, #7c3aed, #6366f1, #3b82f6);
+  background-size: 200% 200%; animation: gradient-shift 4s ease infinite;
+}
+
+/* ── Typography ── */
+.font-mono-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+/* ── Inputs ── */
+.input-dark {
+  width: 100%;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  color: #f1f5f9;
+  border-radius: 12px;
+  padding: 13px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.input-dark::placeholder { color: rgba(255,255,255,0.12); font-weight: 400; }
+.input-dark:focus {
+  border-color: rgba(99,102,241,0.3);
+  background: rgba(99,102,241,0.03);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.05);
+}
+select.input-dark {
+  appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236366f1' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px;
+}
+select.input-dark option { background: #0a0a0a; color: #e2e8f0; }
+
+/* ══════════════════════════════════════════
+   WIZARD — Multi-step form system
+   ══════════════════════════════════════════ */
+
+.wizard-container {
+  padding-bottom: 2rem;
+}
+
+/* ── Wizard Cards ── */
+.wizard-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.3),
+    0 1px 0 rgba(255,255,255,0.02) inset;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.wizard-card:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.012));
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(255,255,255,0.03) inset;
+}
+
+.wizard-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 8px;
+}
+
+/* ── Step Indicator Pill ── */
+.step-indicator-pill {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 12px;
+  padding: 10px 16px;
+  min-width: 200px;
+}
+.step-progress-bar {
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  overflow: hidden;
+}
+.step-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+  box-shadow: 0 0 10px rgba(99,102,241,0.3);
+}
+
+/* ── Vertical Stepper ── */
+.stepper-circle {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border: none;
+  outline: none;
+}
+.stepper-active {
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  color: white;
+  box-shadow: 0 0 20px rgba(99,102,241,0.3), 0 0 40px rgba(99,102,241,0.1);
+}
+.stepper-completed {
+  background: rgba(99,102,241,0.12);
+  color: #818cf8;
+  border: 1px solid rgba(99,102,241,0.2);
+}
+.stepper-pending {
+  background: rgba(255,255,255,0.02);
+  color: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.04);
+  cursor: default;
+}
+.stepper-line {
+  width: 2px; height: 32px;
+  background: rgba(255,255,255,0.04);
+  margin: 6px 0;
+  border-radius: 2px;
+  transition: background 0.3s ease;
+}
+.stepper-line-done {
+  background: linear-gradient(180deg, rgba(99,102,241,0.3), rgba(99,102,241,0.08));
+}
+
+/* ── Goal Cards ── */
+.goal-card {
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 20px 12px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  outline: none;
+}
+.goal-card:hover {
+  background: rgba(255,255,255,0.025);
+  border-color: rgba(255,255,255,0.06);
+  transform: translateY(-2px);
+}
+.goal-card-active {
+  background: rgba(99,102,241,0.06) !important;
+  border-color: rgba(99,102,241,0.25) !important;
+  box-shadow: 0 0 24px rgba(99,102,241,0.08), 0 0 0 1px rgba(99,102,241,0.1);
+}
+
+/* ── Dependent Cards ── */
+.dependent-card {
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.dependent-card:hover {
+  background: rgba(255,255,255,0.025);
+  border-color: rgba(255,255,255,0.06);
+}
+
+.counter-btn {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.4);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.counter-btn:hover {
+  background: rgba(99,102,241,0.1);
+  border-color: rgba(99,102,241,0.2);
+  color: #818cf8;
+}
+.counter-input {
+  width: 40px; height: 28px;
+  text-align: center;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  color: #f1f5f9;
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  -moz-appearance: textfield;
+}
+.counter-input::-webkit-outer-spin-button,
+.counter-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.counter-input:focus {
+  border-color: rgba(99,102,241,0.3);
+  background: rgba(99,102,241,0.04);
+}
+
+/* ── Spouse Toggle ── */
+.spouse-toggle {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.015);
+  color: rgba(255,255,255,0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.spouse-toggle:hover {
+  background: rgba(255,255,255,0.03);
+}
+.spouse-toggle-active {
+  background: rgba(99,102,241,0.08) !important;
+  border-color: rgba(99,102,241,0.25) !important;
+  color: #a5b4fc !important;
+}
+
+/* ── Toggle Cards (Health) ── */
+.toggle-card {
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 14px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: rgba(255,255,255,0.3);
+  outline: none;
+  width: 100%;
+}
+.toggle-card:hover {
+  background: rgba(255,255,255,0.025);
+  border-color: rgba(255,255,255,0.06);
+}
+.toggle-card-active {
+  background: rgba(99,102,241,0.06) !important;
+  border-color: rgba(99,102,241,0.25) !important;
+  color: rgba(255,255,255,0.7) !important;
+  box-shadow: 0 0 16px rgba(99,102,241,0.06);
+}
+
+/* ── Toggle Switch ── */
+.toggle-switch {
+  width: 44px; height: 24px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  padding: 2px;
+  transition: all 0.3s ease;
+}
+.toggle-switch-on {
+  background: rgba(99,102,241,0.3) !important;
+  border-color: rgba(99,102,241,0.4) !important;
+}
+.toggle-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* ── Health Condition Card ── */
+.health-condition-card {
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+.health-condition-card:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+/* ── Summary Pills ── */
+.wizard-summary-pill {
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.wizard-summary-green {
+  background: rgba(16,185,129,0.04);
+  border: 1px solid rgba(16,185,129,0.1);
+  color: rgba(110,231,183,0.7);
+}
+.wizard-summary-amber {
+  background: rgba(245,158,11,0.04);
+  border: 1px solid rgba(245,158,11,0.1);
+  color: rgba(252,211,77,0.7);
+}
+
+/* ── Range slider ── */
+.wizard-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.06);
+  outline: none;
+  cursor: pointer;
+}
+.wizard-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  border: 2px solid rgba(255,255,255,0.1);
+  box-shadow: 0 0 10px rgba(99,102,241,0.3);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.wizard-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+.wizard-range::-moz-range-thumb {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  border: 2px solid rgba(255,255,255,0.1);
+  box-shadow: 0 0 10px rgba(99,102,241,0.3);
+  cursor: pointer;
+}
+
+.wizard-age-badge {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+  font-family: var(--font-mono);
+}
+
+/* ── Navigation Buttons ── */
+.wizard-btn-back {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 16px 24px;
+  border-radius: 14px;
+  font-size: 14px; font-weight: 600;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.wizard-btn-back:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+}
+
+.wizard-btn-next {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 16px 24px;
+  border-radius: 14px;
+  font-size: 14px; font-weight: 700;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(99,102,241,0.2);
+}
+.wizard-btn-next:hover {
+  box-shadow: 0 6px 28px rgba(99,102,241,0.3);
+  transform: translateY(-1px);
+}
+
+.wizard-btn-submit {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 16px 24px;
+  border-radius: 14px;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #7c3aed, #6366f1, #3b82f6);
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease infinite;
+  border: none;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 25px rgba(99,102,241,0.25);
+}
+.wizard-btn-submit:hover {
+  box-shadow: 0 6px 32px rgba(99,102,241,0.35);
+  transform: translateY(-1px);
+}
+.wizard-btn-submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Glow border ── */
+.glow-border {
+  border: 1px solid rgba(99,102,241,0.08);
+}
+
+/* ══════════════════════════════════════════
+   RISK ANALYSIS — Dashboard redesign
+   ══════════════════════════════════════════ */
+
+/* Hero cards (Overall Risk + Critic AI) */
+.risk-hero-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 20px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.risk-hero-card:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.035), rgba(255,255,255,0.014));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Dimension cards (3x2 grid) */
+.risk-dimension-card {
+  background: linear-gradient(160deg, rgba(255,255,255,0.025), rgba(255,255,255,0.008));
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  min-height: 220px;
+}
+.risk-dimension-card:hover {
+  background: linear-gradient(160deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+  border-color: rgba(255,255,255,0.08);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ══════════════════════════════════════════
+   SCENARIO SIMULATION — Dashboard redesign
+   ══════════════════════════════════════════ */
+
+.scenario-hero-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.008));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 20px;
+  padding: 32px;
+  text-align: center;
+}
+
+.scenario-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.006));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.scenario-card:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Animated visual container */
+.scenario-visual {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.scenario-visual-medical {
+  background: linear-gradient(135deg, rgba(239,68,68,0.04), rgba(239,68,68,0.01));
+  border: 1px solid rgba(239,68,68,0.08);
+}
+.scenario-visual-accident {
+  background: linear-gradient(135deg, rgba(245,158,11,0.04), rgba(245,158,11,0.01));
+  border: 1px solid rgba(245,158,11,0.08);
+}
+.scenario-visual-income {
+  background: linear-gradient(135deg, rgba(139,92,246,0.04), rgba(139,92,246,0.01));
+  border: 1px solid rgba(139,92,246,0.08);
+}
+
+/* Stat cells within scenario cards */
+.stat-cell {
+  text-align: center;
+  padding: 12px 8px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.03);
+  transition: all 0.2s ease;
+}
+.stat-cell:hover {
+  background: rgba(255,255,255,0.025);
+}
+
+/* ══════════════════════════════════════════
+   POLICY EVALUATION — Dashboard redesign
+   ══════════════════════════════════════════ */
+
+.policy-eval-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.006));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.policy-eval-card:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border-color: rgba(255,255,255,0.06);
+}
+
+.policy-metric-cell {
+  text-align: center;
+  padding: 14px 8px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.012);
+  border: 1px solid rgba(255,255,255,0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+.policy-metric-cell:hover {
+  background: rgba(255,255,255,0.025);
+  border-color: rgba(255,255,255,0.05);
+}
+
+.policy-best-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(16, 185, 129, 0.08);
+  color: #34D399;
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+/* ══════════════════════════════════════════
+   CRITIC TAB
+   ══════════════════════════════════════════ */
+
+.critic-decision-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.006));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 18px;
+  padding: 24px;
+}
+.critic-decision-reranked {
+  border-left: 3px solid rgba(245,158,11,0.2);
+}
+.critic-decision-accepted {
+  border-left: 3px solid rgba(16,185,129,0.15);
+}
+
+.critic-confidence-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.018), rgba(255,255,255,0.006));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 18px;
+  padding: 24px;
+}
+
+/* ══════════════════════════════════════════
+   RESULT / RECOMMENDATION TAB
+   ══════════════════════════════════════════ */
+
+.result-hero-card {
+  background: linear-gradient(145deg, rgba(99,102,241,0.06), rgba(99,102,241,0.015));
+  border: 1px solid rgba(99,102,241,0.1);
+  border-radius: 20px;
+  padding: 40px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.result-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(99,102,241,0.06), transparent 70%);
+  pointer-events: none;
+}
+
+.result-metric-cell {
+  background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.006));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transition: all 0.2s ease;
+}
+.result-metric-cell:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border-color: rgba(255,255,255,0.06);
+}
+
+.result-insights-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.018), rgba(255,255,255,0.006));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 18px;
+  padding: 28px;
+}
+
+.result-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.01);
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+/* ══════════════════════════════════════════
+   PIPELINE TRACE TAB
+   ══════════════════════════════════════════ */
+
+.pipeline-stat-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(255,255,255,0.006));
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 18px;
+  padding: 24px;
+  text-align: center;
+}
+
+.pipeline-entry-card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.015), rgba(255,255,255,0.005));
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 14px;
+  padding: 16px 20px;
+  transition: all 0.2s ease;
+}
+.pipeline-entry-card:hover {
+  background: linear-gradient(145deg, rgba(255,255,255,0.025), rgba(255,255,255,0.01));
+  border-color: rgba(255,255,255,0.05);
+}
+

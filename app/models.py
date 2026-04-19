@@ -116,6 +116,7 @@ class CriticResult(BaseModel):
     validated_policy: RankedPolicy
     issues: List[str]
     confidence_score: float
+    requires_replanning: bool = False
 
 
 class MemorySnapshot(BaseModel):

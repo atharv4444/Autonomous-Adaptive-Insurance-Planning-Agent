@@ -82,10 +82,11 @@ class PolicyEvaluationAgent:
         for index, item in enumerate(ranked_inputs):
             utility_score = utility_scores[index]
             total_score = round(
-                (utility_score * 0.40)
-                + (float(item["suitability_score"]) * 0.25)
-                + (float(item["coverage_score"]) * 0.20)
-                + (float(item["affordability_score"]) * 0.15),
+                (utility_score * 0.35)
+                + (float(item["suitability_score"]) * 0.20)
+                + (float(item["coverage_score"]) * 0.15)
+                + (float(item["affordability_score"]) * 0.10)
+                + (float(item["ai_score"]) * 0.20),
                 2,
             )
 
