@@ -23,12 +23,38 @@ export function formatCurrency(value) {
  */
 export function extractMetrics(res) {
   if (!res) return [];
+
+  const p = res.user_profile;
+  let riskDetails = null;
+  if (p) {
+    const ageScore = p.age < 30 ? 10 : p.age < 50 ? 15 : 8;
+    const depScore = Math.min(p.dependents * 7, 20);
+    const libScore = Math.min((p.liability_ratio || 0) * 15, 15).toFixed(2);
+    const incScore = p.income < 500000 ? 15 : p.income < 1200000 ? 9 : 4;
+    const nwScore = p.net_worth <= 0 ? 10 : p.net_worth < 1000000 ? 7 : 3;
+    const healthScore = (p.health_risk_score || 0).toFixed(1);
+    
+    riskDetails = {
+      formula: "Age + Dependents + Liability + Income + Net Worth + Health",
+      breakdown: [
+        { label: "Age", score: ageScore, max: 15, value: p.age },
+        { label: "Dependents", score: depScore, max: 20, value: p.dependents },
+        { label: "Liability", score: libScore, max: 15, value: `Ratio ${(p.liability_ratio || 0).toFixed(2)}` },
+        { label: "Income", score: incScore, max: 15, value: formatCurrency(p.income) },
+        { label: "Net Worth", score: nwScore, max: 10, value: formatCurrency(p.net_worth) },
+        { label: "Health", score: healthScore, max: 25, value: "Profile based" }
+      ],
+      total: res.risk_score?.toFixed(1)
+    };
+  }
+
   return [
     {
       label: 'Risk Score',
       value: res.risk_score?.toFixed(1) ?? '—',
       sublabel: res.risk_label ?? 'unknown',
       variant: res.risk_label ?? 'low',
+      details: riskDetails
     },
     {
       label: 'Expected Loss',

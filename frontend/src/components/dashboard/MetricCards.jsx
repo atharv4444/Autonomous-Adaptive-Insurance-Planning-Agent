@@ -62,6 +62,34 @@ export default function MetricCards({ metrics }) {
                 </span>
               )}
             </div>
+
+            {/* Dropdown for Details */}
+            {m.details && (
+              <details className="mt-4 text-[11px]" style={{ color: 'var(--color-text-secondary)' }}>
+                <summary className="cursor-pointer font-medium hover:text-[var(--color-info)] transition-colors">
+                  View Formula & Calculation
+                </summary>
+                <div className="mt-2 p-2 rounded bg-[var(--color-cream-dark)] border border-[var(--color-border-soft)]">
+                  <div className="mb-2">
+                    <span className="font-semibold">Formula:</span> {m.details.formula}
+                  </div>
+                  <div className="space-y-1">
+                    {m.details.breakdown.map((item, idx) => (
+                      <div key={idx} className="flex justify-between items-center">
+                        <span className="text-[10px]">{item.label} (Max {item.max}):</span>
+                        <span className="font-medium text-[var(--color-text-primary)]">
+                          {item.score} <span className="text-[9px] text-[var(--color-text-muted)]">({item.value})</span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 pt-1 border-t border-[var(--color-border-soft)] flex justify-between font-semibold text-[var(--color-text-primary)]">
+                    <span>Total Risk Score:</span>
+                    <span>{m.details.total}</span>
+                  </div>
+                </div>
+              </details>
+            )}
           </div>
         );
       })}
