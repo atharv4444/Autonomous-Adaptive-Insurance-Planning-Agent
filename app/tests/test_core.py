@@ -17,6 +17,9 @@ def _build_sample_profile(**overrides: object) -> UserProfile:
     """Helper to create a UserProfile with sensible defaults and optional overrides."""
     defaults = {
         "age": 35,
+        "location": "Urban",
+        "state": "Maharashtra",
+        "city": "Mumbai",
         "income": 900000,
         "dependents": 2,
         "assets": 2000000,
@@ -154,6 +157,9 @@ def test_critic_can_rerank_when_first_policy_has_clear_issues() -> None:
     critic = CriticAgent()
     profile = UserProfile(
         age=42,
+        location="Urban",
+        state="Maharashtra",
+        city="Pune",
         income=500000,
         dependents=2,
         assets=100000,

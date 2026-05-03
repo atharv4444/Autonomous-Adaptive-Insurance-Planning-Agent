@@ -14,7 +14,7 @@
  * @returns {Promise<object>} — RecommendationResponse from FastAPI
  */
 export async function fetchRecommendation(userInput) {
-  const response = await fetch('/recommend', {
+  const response = await fetch('http://127.0.0.1:8000/recommend', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userInput),
@@ -37,7 +37,7 @@ export async function fetchRecommendation(userInput) {
  */
 export async function fetchScoreInsights(recommendationResponse) {
   try {
-    const response = await fetch('/explain-scores', {
+    const response = await fetch('http://127.0.0.1:8000/explain-scores', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(recommendationResponse),
