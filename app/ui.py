@@ -291,10 +291,19 @@ def render_profile_form() -> None:
 
         # ── Basic Info ───────────────────────────────────────────
         st.markdown('<div class="section-label">📋 Basic Information</div>', unsafe_allow_html=True)
-        b1, b2 = st.columns(2)
+        b1, b2, b3 = st.columns(3)
         with b1:
             age = st.number_input("Age", min_value=18, max_value=70, value=30, step=1)
+            state = st.text_input("State", value="", placeholder="e.g. Maharashtra", help="State of residence")
         with b2:
+            location = st.selectbox(
+                "Location Type",
+                options=["Urban", "Semi-Urban", "Rural"],
+                index=0,
+                help="Your primary residence location type",
+            )
+            city = st.text_input("City", value="", placeholder="e.g. Mumbai", help="City or exact local area")
+        with b3:
             income = st.number_input(
                 "Annual Income (₹)",
                 min_value=0,
@@ -467,6 +476,9 @@ def render_profile_form() -> None:
             alcohol_map = {"None": "none", "Occasional": "occasional", "Moderate": "moderate", "Heavy": "heavy"}
             payload: Dict[str, Any] = {
                 "age": int(age),
+                "location": location,
+                "state": state,
+                "city": city,
                 "income": float(income),
                 "dependents": int(total_dependents),
                 "assets": float(total_assets),

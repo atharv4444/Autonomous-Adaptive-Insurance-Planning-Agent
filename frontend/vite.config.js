@@ -10,9 +10,21 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/recommend': 'http://127.0.0.1:8000',
-      '/explain-scores': 'http://127.0.0.1:8000',
-      '/health': 'http://127.0.0.1:8000',
+      '/recommend': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/explain-scores': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/health': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 })
