@@ -72,7 +72,7 @@ export default function LoginView({ onLogin }) {
             {isSignUp ? 'Create Account' : 'Welcome Back'}
           </h1>
           <p className="text-sm font-medium" style={{ color: 'var(--color-text-secondary)' }}>
-            InsureAI Planning Dashboard
+            InsuraX Planning Dashboard
           </p>
         </div>
 

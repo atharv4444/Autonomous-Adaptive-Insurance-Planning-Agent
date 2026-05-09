@@ -41,7 +41,7 @@ export default function Header({ activePage, status, user, onLogout }) {
           {title}
         </h2>
         <p className="text-xs mt-0.5" style={{ color: 'var(--color-text-secondary)' }}>
-          InsureAI — Autonomous Adaptive Insurance Planning
+          InsuraX — Autonomous Adaptive Insurance Planning
         </p>
       </div>
 

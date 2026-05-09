@@ -35,11 +35,11 @@ export function extractMetrics(res) {
     const healthScore = (p.health_risk_score || 0).toFixed(1);
     
     riskDetails = {
-      formula: "Age + Dependents + Liability + Income + Net Worth + Health",
+      formula: "Age + Dependents + Liability Ratio + Income + Net Worth + Health",
       breakdown: [
         { label: "Age", score: ageScore, max: 15, value: p.age },
         { label: "Dependents", score: depScore, max: 20, value: p.dependents },
-        { label: "Liability", score: libScore, max: 15, value: `Ratio ${(p.liability_ratio || 0).toFixed(2)}` },
+        { label: "Liability Ratio", score: libScore, max: 15, value: `Liabilities ÷ Income = ${(p.liability_ratio || 0).toFixed(2)}` },
         { label: "Income", score: incScore, max: 15, value: formatCurrency(p.income) },
         { label: "Net Worth", score: nwScore, max: 10, value: formatCurrency(p.net_worth) },
         { label: "Health", score: healthScore, max: 25, value: "Profile based" }

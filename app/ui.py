@@ -12,7 +12,6 @@ from pydantic import ValidationError
 from app.main import recommender
 from app.models import RecommendationResponse, UserInput
 
-
 # ─────────────────────────────────────────────────────────────
 # Page Config
 # ─────────────────────────────────────────────────────────────
@@ -26,7 +25,8 @@ st.set_page_config(
 # ─────────────────────────────────────────────────────────────
 # Custom CSS
 # ─────────────────────────────────────────────────────────────
-st.markdown("""
+st.markdown(
+    """
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -132,7 +132,9 @@ st.markdown("""
     .anim-accident { animation: car-crash 0.9s cubic-bezier(.22,.61,.36,1) forwards; display:inline-block; }
     .anim-income { animation: job-fire 1.2s ease-in forwards; display:inline-block; }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # ─────────────────────────────────────────────────────────────
 # Constants
@@ -242,7 +244,8 @@ for key, default in [
 def render_header() -> None:
     _, hcol, _ = st.columns([1, 2, 1])
     with hcol:
-        st.markdown("""
+        st.markdown(
+            """
         <div style='text-align:center;padding:32px 0 24px 0;'>
             <h1 style='font-size:34px;font-weight:900;margin:8px 0 4px;
                 background:linear-gradient(135deg,#a78bfa,#60a5fa,#34d399);
@@ -251,7 +254,9 @@ def render_header() -> None:
             <p style='color:rgba(255,255,255,0.35);font-size:12px;letter-spacing:4px;
                 text-transform:uppercase;margin:0;'>Autonomous Adaptive Planning Agent</p>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
 
 # ─────────────────────────────────────────────────────────────
@@ -261,13 +266,16 @@ def render_profile_form() -> None:
     _, form_col, _ = st.columns([1, 3, 1])
 
     with form_col:
-        st.markdown('<div class="section-label">👤 User Profile</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-label">👤 User Profile</div>', unsafe_allow_html=True
+        )
 
         # ── Profile picture + name/address ──────────────────────
         pic_col, info_col = st.columns([1, 2])
         with pic_col:
             uploaded_pic = st.file_uploader(
-                "Photo", type=["jpg", "jpeg", "png"],
+                "Photo",
+                type=["jpg", "jpeg", "png"],
                 label_visibility="collapsed",
             )
             if uploaded_pic is not None:
@@ -275,26 +283,57 @@ def render_profile_form() -> None:
             if st.session_state.profile_pic_bytes:
                 st.image(st.session_state.profile_pic_bytes, width=110)
             else:
-                st.markdown("""
+                st.markdown(
+                    """
                 <div style='width:110px;height:110px;border-radius:50%;
                     background:linear-gradient(135deg,#7c3aed,#3b82f6);
                     display:flex;align-items:center;justify-content:center;
                     font-size:38px;'>👤</div>
-                """, unsafe_allow_html=True)
+                """,
+                    unsafe_allow_html=True,
+                )
             st.caption("Click to upload")
 
         with info_col:
-            name = st.text_input("Full Name *", value=st.session_state.user_name, placeholder="e.g. Rajesh Kumar")
-            address = st.text_area("Address", placeholder="City, State, Country", height=78)
+            name = st.text_input(
+                "Full Name *",
+                value=st.session_state.user_name,
+                placeholder="e.g. Rajesh Kumar",
+            )
+            address = st.text_area(
+                "Address", placeholder="City, State, Country", height=78
+            )
 
         st.divider()
 
         # ── Basic Info ───────────────────────────────────────────
-        st.markdown('<div class="section-label">📋 Basic Information</div>', unsafe_allow_html=True)
-        b1, b2 = st.columns(2)
+        st.markdown(
+            '<div class="section-label">📋 Basic Information</div>',
+            unsafe_allow_html=True,
+        )
+        b1, b2, b3 = st.columns(3)
         with b1:
             age = st.number_input("Age", min_value=18, max_value=70, value=30, step=1)
+            state = st.text_input(
+                "State",
+                value="",
+                placeholder="e.g. Maharashtra",
+                help="State of residence",
+            )
         with b2:
+            location = st.selectbox(
+                "Location Type",
+                options=["Urban", "Semi-Urban", "Rural"],
+                index=0,
+                help="Your primary residence location type",
+            )
+            city = st.text_input(
+                "City",
+                value="",
+                placeholder="e.g. Mumbai",
+                help="City or exact local area",
+            )
+        with b3:
             income = st.number_input(
                 "Annual Income (₹)",
                 min_value=0,
@@ -309,16 +348,27 @@ def render_profile_form() -> None:
         st.divider()
 
         # ── Dependents ──────────────────────────────────────────
-        st.markdown('<div class="section-label">👨‍👩‍👧‍👦 Dependents</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-label">👨‍👩‍👧‍👦 Dependents</div>',
+            unsafe_allow_html=True,
+        )
         d1, d2, d3 = st.columns(3)
         with d1:
             parents = st.number_input(
-                "👴 Parents", min_value=0, max_value=4, value=0, step=1,
+                "👴 Parents",
+                min_value=0,
+                max_value=4,
+                value=0,
+                step=1,
                 help="Number of financial dependent parents",
             )
         with d2:
             children = st.number_input(
-                "👶 Children", min_value=0, max_value=10, value=0, step=1,
+                "👶 Children",
+                min_value=0,
+                max_value=10,
+                value=0,
+                step=1,
                 help="Number of dependent children",
             )
         with d3:
@@ -340,32 +390,56 @@ def render_profile_form() -> None:
         st.divider()
 
         # ── Assets ──────────────────────────────────────────────
-        st.markdown('<div class="section-label">🏦 Assets</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-label">🏦 Assets</div>', unsafe_allow_html=True
+        )
         st.caption("Check all that apply. Leave unchecked if not applicable.")
 
         has_bank = st.checkbox("🏦 Bank / FD / Savings Account", value=True)
         bank_bal = 0
         if has_bank:
-            bank_bal = st.number_input("Bank Balance (₹)", min_value=0, value=0, step=10000, format="%d")
+            bank_bal = st.number_input(
+                "Bank Balance (₹)", min_value=0, value=0, step=10000, format="%d"
+            )
 
         has_realestate = st.checkbox("🏠 Real Estate / Property")
         realestate_val = 0
         if has_realestate:
-            realestate_val = st.number_input("Property Market Value (₹)", min_value=0, value=0, step=100000, format="%d")
+            realestate_val = st.number_input(
+                "Property Market Value (₹)",
+                min_value=0,
+                value=0,
+                step=100000,
+                format="%d",
+            )
 
         has_vehicles = st.checkbox("🚗 Vehicles")
         vehicle_val = 0
         if has_vehicles:
             vc1, vc2 = st.columns(2)
             with vc1:
-                n_vehicles = st.number_input("Number of Vehicles", min_value=1, max_value=20, value=1, step=1)
+                n_vehicles = st.number_input(
+                    "Number of Vehicles", min_value=1, max_value=20, value=1, step=1
+                )
             with vc2:
-                vehicle_val = st.number_input("Total Vehicle Value (₹)", min_value=0, value=0, step=50000, format="%d")
+                vehicle_val = st.number_input(
+                    "Total Vehicle Value (₹)",
+                    min_value=0,
+                    value=0,
+                    step=50000,
+                    format="%d",
+                )
 
         has_investments = st.checkbox("📈 Stocks / Mutual Funds / Gold / Crypto")
         invest_val = 0
         if has_investments:
-            invest_val = st.number_input("Total Investment Value (₹)", min_value=0, value=0, step=10000, format="%d")
+            invest_val = st.number_input(
+                "Total Investment Value (₹)",
+                min_value=0,
+                value=0,
+                step=10000,
+                format="%d",
+            )
 
         total_assets = bank_bal + realestate_val + vehicle_val + invest_val
         if total_assets > 0:
@@ -374,26 +448,37 @@ def render_profile_form() -> None:
         st.divider()
 
         # ── Liabilities ─────────────────────────────────────────
-        st.markdown('<div class="section-label">📉 Liabilities</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-label">📉 Liabilities</div>', unsafe_allow_html=True
+        )
 
         st.caption("Enter 0 if a loan does not apply to you.")
         l1, l2, l3 = st.columns(3)
         with l1:
             home_loan = st.number_input(
                 "🏠 Home Loan / Mortgage (₹)",
-                min_value=0, value=0, step=50000, format="%d",
+                min_value=0,
+                value=0,
+                step=50000,
+                format="%d",
                 help="Outstanding home loan or mortgage amount",
             )
         with l2:
             car_loan = st.number_input(
                 "🚗 Vehicle Loan (₹)",
-                min_value=0, value=0, step=10000, format="%d",
+                min_value=0,
+                value=0,
+                step=10000,
+                format="%d",
                 help="Outstanding vehicle loan amount",
             )
         with l3:
             personal_loan = st.number_input(
                 "💳 Personal / CC Debt (₹)",
-                min_value=0, value=0, step=5000, format="%d",
+                min_value=0,
+                value=0,
+                step=5000,
+                format="%d",
                 help="Personal loan plus credit card debt",
             )
 
@@ -404,8 +489,12 @@ def render_profile_form() -> None:
         st.divider()
 
         # ── Health Profile ─────────────────────────────────────
-        st.markdown('<div class="section-label">🩺 Health Profile</div>', unsafe_allow_html=True)
-        st.caption("Your health profile directly impacts your insurance risk assessment and premium calculations.")
+        st.markdown(
+            '<div class="section-label">🩺 Health Profile</div>', unsafe_allow_html=True
+        )
+        st.caption(
+            "Your health profile directly impacts your insurance risk assessment and premium calculations."
+        )
 
         h1, h2 = st.columns(2)
         with h1:
@@ -445,10 +534,18 @@ def render_profile_form() -> None:
         st.divider()
 
         # ── Insurance Policy ────────────────────────────────────
-        st.markdown('<div class="section-label">🛡️ Insurance Policy</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="section-label">🛡️ Insurance Policy</div>',
+            unsafe_allow_html=True,
+        )
         insurance_policy = st.selectbox(
             "What type of insurance are you looking for?",
-            options=["Health Insurance", "Life Insurance", "Car Insurance", "Home Insurance"],
+            options=[
+                "Health Insurance",
+                "Life Insurance",
+                "Car Insurance",
+                "Home Insurance",
+            ],
             help="Select the primary policy type you need.",
         )
 
@@ -461,12 +558,19 @@ def render_profile_form() -> None:
             use_container_width=True,
         )
 
-
         if submitted:
             mapped_goal = POLICY_GOAL_MAP[insurance_policy]
-            alcohol_map = {"None": "none", "Occasional": "occasional", "Moderate": "moderate", "Heavy": "heavy"}
+            alcohol_map = {
+                "None": "none",
+                "Occasional": "occasional",
+                "Moderate": "moderate",
+                "Heavy": "heavy",
+            }
             payload: Dict[str, Any] = {
                 "age": int(age),
+                "location": location,
+                "state": state,
+                "city": city,
                 "income": float(income),
                 "dependents": int(total_dependents),
                 "assets": float(total_assets),
@@ -509,14 +613,17 @@ def render_results(result: RecommendationResponse, meta: Dict[str, Any]) -> None
         if st.session_state.profile_pic_bytes:
             st.image(st.session_state.profile_pic_bytes, width=60)
         else:
-            st.markdown("""
+            st.markdown(
+                """
             <div style='width:52px;height:52px;border-radius:50%;
                 background:linear-gradient(135deg,#7c3aed,#3b82f6);
                 display:flex;align-items:center;justify-content:center;
                 font-size:22px;color:white;font-weight:700;'>
                 {initials}
             </div>
-            """.format(initials=(name[:1].upper() if name else "U")), unsafe_allow_html=True)
+            """.format(initials=(name[:1].upper() if name else "U")),
+                unsafe_allow_html=True,
+            )
     with hc2:
         p = result.user_profile
         st.markdown(f"### {name}")
@@ -533,13 +640,15 @@ def render_results(result: RecommendationResponse, meta: Dict[str, Any]) -> None
 
     st.divider()
 
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "Risk Analysis",
-        "Scenario Simulation",
-        "Policy Evaluation",
-        "Final Recommendation",
-        "Critic Insights",
-    ])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(
+        [
+            "Risk Analysis",
+            "Scenario Simulation",
+            "Policy Evaluation",
+            "Final Recommendation",
+            "Critic Insights",
+        ]
+    )
 
     with tab1:
         render_risk_analysis(result)
@@ -552,6 +661,7 @@ def render_results(result: RecommendationResponse, meta: Dict[str, Any]) -> None
     with tab5:
         render_critic_insights(result)
 
+
 def _age_risk_explanation(age: int) -> str:
     if age < 30:
         return "Younger individuals (<30) have a lower risk of severe medical emergencies but may have less stability, leading to a moderate score (10 pts)."
@@ -559,10 +669,12 @@ def _age_risk_explanation(age: int) -> str:
         return "Middle-aged individuals (30-49) face increasing family responsibilities and rising health risks, leading to the highest score (15 pts)."
     return "Older individuals (50+) face higher health risks, but often have fewer dependents or lower income-loss impact, leading to a lower risk score (8 pts)."
 
+
 def _dep_risk_explanation(deps: int) -> str:
     if deps == 0:
         return "With 0 dependents, you have minimal financial liability towards others, keeping your dependent risk score at 0."
     return f"With {deps} dependent(s), you carry a higher financial responsibility in case of income loss or emergencies. Each dependent adds 7 points (max 20)."
+
 
 def _liability_risk_explanation(ratio: float) -> str:
     if ratio == 0:
@@ -573,12 +685,14 @@ def _liability_risk_explanation(ratio: float) -> str:
         return "Your liability ratio is moderate. A significant portion of your income is committed to debt, leading to a moderate score."
     return "Your liability ratio is high. A large portion of your income goes to debt, making you vulnerable to income loss, leading to a high score."
 
+
 def _income_risk_explanation(income: float) -> str:
     if income < 500000:
         return "An income below Rs. 5,00,000 leaves little buffer for sudden large expenses, representing the highest risk score (15 pts)."
     if income < 1200000:
         return "A moderate income between Rs. 5L-12L provides some safety net, but still limits capacity for major emergencies (9 pts)."
     return "An income above Rs. 12,00,000 provides a strong safety net for emergencies, reducing financial risk significantly (4 pts)."
+
 
 def _networth_risk_explanation(nw: float) -> str:
     if nw <= 0:
@@ -587,12 +701,17 @@ def _networth_risk_explanation(nw: float) -> str:
         return "Your net worth is under Rs. 10 Lakhs. You have some cushion, but a major event could wipe it out (7 pts)."
     return "Your net worth is above Rs. 10 Lakhs. You have significant assets to cushion financial hits, reducing your risk score (3 pts)."
 
+
 def _health_risk_explanation(p: object) -> str:
     parts = []
     if p.is_smoker:
-        parts.append("**Smoking (+10 pts):** Tobacco use is the single largest modifiable health risk factor. Smokers face 2-4x higher risk of heart disease and are more likely to require costly treatments.")
+        parts.append(
+            "**Smoking (+10 pts):** Tobacco use is the single largest modifiable health risk factor. Smokers face 2-4x higher risk of heart disease and are more likely to require costly treatments."
+        )
     else:
-        parts.append("**Smoking (+0 pts):** You are a non-smoker, which significantly reduces your baseline health risk.")
+        parts.append(
+            "**Smoking (+0 pts):** You are a non-smoker, which significantly reduces your baseline health risk."
+        )
 
     alcohol_desc = {
         "none": "**Alcohol (+0 pts):** No alcohol consumption — no additional risk from this factor.",
@@ -603,13 +722,18 @@ def _health_risk_explanation(p: object) -> str:
     parts.append(alcohol_desc.get(p.alcohol_consumption, alcohol_desc["none"]))
 
     if p.has_severe_health_issues:
-        parts.append("**Pre-existing Conditions (+7 pts):** Severe conditions (e.g. diabetes, heart disease, cancer) sharply increase both the probability and cost of future medical events.")
+        parts.append(
+            "**Pre-existing Conditions (+7 pts):** Severe conditions (e.g. diabetes, heart disease, cancer) sharply increase both the probability and cost of future medical events."
+        )
     else:
-        parts.append("**Pre-existing Conditions (+0 pts):** No severe conditions reported — this keeps your health risk contribution low.")
+        parts.append(
+            "**Pre-existing Conditions (+0 pts):** No severe conditions reported — this keeps your health risk contribution low."
+        )
 
     total = p.health_risk_score
     parts.append(f"\n**Total Health Risk Score: {total:.1f} / 25 pts**")
     return "\n\n".join(parts)
+
 
 # ─────────────────────────────────────────────────────────────
 # Tab 1 — Risk Analysis
@@ -647,19 +771,35 @@ def render_risk_analysis(result: RecommendationResponse) -> None:
         health_parts.append("Severe condition")
     health_value = ", ".join(health_parts) if health_parts else "Healthy"
 
-    breakdown = pd.DataFrame({
-        "Factor": ["Age", "Dependents", "Liability Ratio", "Income", "Net Worth", "Health Profile"],
-        "Your Score": [age_score, dep_score, lib_score, inc_score, nw_score, health_score],
-        "Max Possible": [15, 20, 15, 15, 10, 25],
-        "Your Value": [
-            f"Age {p.age}",
-            f"{p.dependents} dependents",
-            f"Ratio {p.liability_ratio:.2f}",
-            f"Rs.{p.income:,.0f}",
-            f"Rs.{p.net_worth:,.0f}",
-            health_value,
-        ],
-    })
+    breakdown = pd.DataFrame(
+        {
+            "Factor": [
+                "Age",
+                "Dependents",
+                "Liability Ratio",
+                "Income",
+                "Net Worth",
+                "Health Profile",
+            ],
+            "Your Score": [
+                age_score,
+                dep_score,
+                lib_score,
+                inc_score,
+                nw_score,
+                health_score,
+            ],
+            "Max Possible": [15, 20, 15, 15, 10, 25],
+            "Your Value": [
+                f"Age {p.age}",
+                f"{p.dependents} dependents",
+                f"Ratio {p.liability_ratio:.2f}",
+                f"Rs.{p.income:,.0f}",
+                f"Rs.{p.net_worth:,.0f}",
+                health_value,
+            ],
+        }
+    )
 
     base = alt.Chart(breakdown)
     your_bars = base.mark_bar(cornerRadiusTopLeft=6, cornerRadiusTopRight=6).encode(
@@ -669,25 +809,33 @@ def render_risk_analysis(result: RecommendationResponse) -> None:
         tooltip=["Factor:N", "Your Score:Q", "Max Possible:Q", "Your Value:N"],
     )
     max_bars = base.mark_bar(
-        cornerRadiusTopLeft=6, cornerRadiusTopRight=6, opacity=0.15,
+        cornerRadiusTopLeft=6,
+        cornerRadiusTopRight=6,
+        opacity=0.15,
     ).encode(
         x=alt.X("Max Possible:Q"),
         y=alt.Y("Factor:N", sort=None),
         color=alt.value("#a78bfa"),
     )
-    score_labels = base.mark_text(dx=6, color="white", fontSize=13, fontWeight=600).encode(
+    score_labels = base.mark_text(
+        dx=6, color="white", fontSize=13, fontWeight=600
+    ).encode(
         x="Your Score:Q",
         y=alt.Y("Factor:N", sort=None),
         text="Your Score:Q",
     )
     chart = (max_bars + your_bars + score_labels).properties(
-        height=240, title="Risk score by factor (solid = your score, faint = maximum possible)"
+        height=240,
+        title="Risk score by factor (solid = your score, faint = maximum possible)",
     )
     st.altair_chart(chart, use_container_width=True)
 
     # Overall gauge
     gauge_pct = result.risk_score / 100
-    st.progress(float(min(gauge_pct, 1.0)), text=f"Risk Score {result.risk_score:.1f}/100 — {result.risk_label.upper()}")
+    st.progress(
+        float(min(gauge_pct, 1.0)),
+        text=f"Risk Score {result.risk_score:.1f}/100 — {result.risk_label.upper()}",
+    )
 
     # Factor details table
     st.markdown("#### Factor Details")
@@ -703,34 +851,46 @@ def render_risk_analysis(result: RecommendationResponse) -> None:
             "Your Score": st.column_config.TextColumn("Your Score", width="small"),
             "Max Possible": st.column_config.TextColumn("Max Possible", width="small"),
             "Your Value": st.column_config.TextColumn("Your Value", width="large"),
-        }
+        },
     )
 
     # Per-factor explanations
     st.markdown("#### Why These Scores?")
     factor_explanations = [
         (
-            "Age", age_score, 15,
+            "Age",
+            age_score,
+            15,
             _age_risk_explanation(p.age),
         ),
         (
-            "Dependents", dep_score, 20,
+            "Dependents",
+            dep_score,
+            20,
             _dep_risk_explanation(p.dependents),
         ),
         (
-            "Liability Ratio", lib_score, 15,
+            "Liability Ratio",
+            lib_score,
+            15,
             _liability_risk_explanation(p.liability_ratio),
         ),
         (
-            "Income", inc_score, 15,
+            "Income",
+            inc_score,
+            15,
             _income_risk_explanation(p.income),
         ),
         (
-            "Net Worth", nw_score, 10,
+            "Net Worth",
+            nw_score,
+            10,
             _networth_risk_explanation(p.net_worth),
         ),
         (
-            "Health Profile", health_score, 25,
+            "Health Profile",
+            health_score,
+            25,
             _health_risk_explanation(p),
         ),
     ]
@@ -740,7 +900,8 @@ def render_risk_analysis(result: RecommendationResponse) -> None:
 
     # Formula
     with st.expander("Risk Score Formula"):
-        st.code(f"""
+        st.code(
+            f"""
 Risk Score = Age + Dependents + Liability + Income + Net Worth + Health Profile
 
   Age Score       = {age_score}   ->  <30: 10 pts | 30-49: 15 pts | 50+: 8 pts
@@ -751,7 +912,9 @@ Risk Score = Age + Dependents + Liability + Income + Net Worth + Health Profile
   Health Score    = {health_score:.1f}  ->  Smoker: 10 | Alcohol: 0-8 | Severe: 7 (max 25)
   ---------------------------------------------------
   Total           = {result.risk_score:.2f} / 100  ->  {result.risk_label.upper()}
-        """, language=None)
+        """,
+            language=None,
+        )
 
 
 # ─────────────────────────────────────────────────────────────
@@ -765,17 +928,27 @@ def render_scenario_simulation(result: RecommendationResponse) -> None:
         "to predict personalised financial risk for your exact profile."
     )
 
-    st.metric("Total Expected Annual Loss", f"Rs. {result.expected_loss:,.0f}",
-              help="Weighted sum of expected losses across all simulated scenarios.")
+    st.metric(
+        "Total Expected Annual Loss",
+        f"Rs. {result.expected_loss:,.0f}",
+        help="Weighted sum of expected losses across all simulated scenarios.",
+    )
     st.divider()
 
     for item in result.scenario_breakdown:
-        m = SCENARIO_META.get(item.scenario_name, {
-            "svg": "", "color": "#fff",
-            "title": item.scenario_name, "desc": "", "anim_class": "",
-        })
+        m = SCENARIO_META.get(
+            item.scenario_name,
+            {
+                "svg": "",
+                "color": "#fff",
+                "title": item.scenario_name,
+                "desc": "",
+                "anim_class": "",
+            },
+        )
 
-        st.markdown(f"""
+        st.markdown(
+            f"""
         <div style='background:rgba(255,255,255,0.03);
             border:1px solid {m["color"]}30;border-left:4px solid {m["color"]};
             border-radius:16px;padding:24px;margin-bottom:8px;'>
@@ -789,7 +962,9 @@ def render_scenario_simulation(result: RecommendationResponse) -> None:
                 </div>
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
         sc1, sc2, sc3 = st.columns(3)
         sc1.metric("Probability", f"{item.probability:.1%}")
@@ -816,6 +991,7 @@ def render_scenario_simulation(result: RecommendationResponse) -> None:
 
         st.divider()
 
+
 # ─────────────────────────────────────────────────────────────
 # Tab 3 — Policy Evaluation
 # ─────────────────────────────────────────────────────────────
@@ -837,7 +1013,6 @@ def render_policy_evaluation(result: RecommendationResponse) -> None:
             f"{badge} {rp.policy.policy_name}  ·  Total Score: {rp.total_score:.2f}"
             + ("  [RECOMMENDED]" if is_final else ""),
             expanded=(i == 0),
-
         ):
             c1, c2, c3, c4, c5 = st.columns(5)
             c1.metric("Coverage", f"₹{rp.policy.coverage:,.0f}")
@@ -846,10 +1021,24 @@ def render_policy_evaluation(result: RecommendationResponse) -> None:
             c4.metric("AI Match", f"{rp.ai_score:.1f}")
             c5.metric("Prem/Inc", f"{rp.premium_ratio:.2%}")
 
-            score_df = pd.DataFrame({
-                "Dimension": ["Standard Utility", "Suitability", "Coverage", "Affordability", "AI/RL Match"],
-                "Score": [rp.utility_score, rp.suitability_score, rp.coverage_score, rp.affordability_score, rp.ai_score],
-            })
+            score_df = pd.DataFrame(
+                {
+                    "Dimension": [
+                        "Standard Utility",
+                        "Suitability",
+                        "Coverage",
+                        "Affordability",
+                        "AI/RL Match",
+                    ],
+                    "Score": [
+                        rp.utility_score,
+                        rp.suitability_score,
+                        rp.coverage_score,
+                        rp.affordability_score,
+                        rp.ai_score,
+                    ],
+                }
+            )
 
             score_chart = (
                 alt.Chart(score_df)
@@ -864,7 +1053,9 @@ def render_policy_evaluation(result: RecommendationResponse) -> None:
             )
             st.altair_chart(score_chart, use_container_width=True)
 
-            st.caption(f"**Policy Type:** {rp.policy.policy_type.replace('_',' ').title()}")
+            st.caption(
+                f"**Policy Type:** {rp.policy.policy_type.replace('_',' ').title()}"
+            )
             st.caption(f"**Coverage Gap:** ₹{rp.coverage_gap:,.0f}")
             st.caption(f"**Tradeoff:** {rp.tradeoff_summary}")
             st.markdown("**Why this policy:**")
@@ -875,12 +1066,17 @@ def render_policy_evaluation(result: RecommendationResponse) -> None:
     if len(result.top_policies) > 1:
         st.divider()
         st.markdown("#### 📈 Coverage vs Premium Comparison")
-        cdf = pd.DataFrame([{
-            "Policy": rp.policy.policy_name,
-            "Coverage (₹)": rp.policy.coverage,
-            "Annual Premium (₹)": rp.policy.premium,
-            "Utility Score": rp.utility_score,
-        } for rp in result.top_policies])
+        cdf = pd.DataFrame(
+            [
+                {
+                    "Policy": rp.policy.policy_name,
+                    "Coverage (₹)": rp.policy.coverage,
+                    "Annual Premium (₹)": rp.policy.premium,
+                    "Utility Score": rp.utility_score,
+                }
+                for rp in result.top_policies
+            ]
+        )
         scatter = (
             alt.Chart(cdf)
             .mark_circle(size=200)
@@ -889,7 +1085,12 @@ def render_policy_evaluation(result: RecommendationResponse) -> None:
                 y=alt.Y("Coverage (₹):Q"),
                 size=alt.Size("Utility Score:Q", scale=alt.Scale(range=[100, 600])),
                 color=alt.Color("Policy:N", scale=alt.Scale(scheme="purples")),
-                tooltip=["Policy:N", "Coverage (₹):Q", "Annual Premium (₹):Q", "Utility Score:Q"],
+                tooltip=[
+                    "Policy:N",
+                    "Coverage (₹):Q",
+                    "Annual Premium (₹):Q",
+                    "Utility Score:Q",
+                ],
             )
             .properties(height=300, title="Bubble size = Utility Score")
         )
@@ -903,7 +1104,8 @@ def render_final_recommendation(result: RecommendationResponse) -> None:
     fp = result.final_recommendation
     st.subheader("🏆 Final Recommendation")
 
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div style='background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(59,130,246,0.15));
         border:1px solid rgba(124,58,237,0.4);border-radius:20px;
         padding:32px;text-align:center;margin-bottom:24px;'>
@@ -914,7 +1116,9 @@ def render_final_recommendation(result: RecommendationResponse) -> None:
               ·  Confidence {result.confidence_score:.1f}%
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Coverage", f"₹{fp.policy.coverage:,.0f}")

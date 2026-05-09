@@ -39,6 +39,9 @@ class UserProfilingAgent:
 
         return UserProfile(
             age=user_input.age,
+            location=user_input.location,
+            state=user_input.state,
+            city=user_input.city,
             income=user_input.income,
             dependents=user_input.dependents,
             assets=user_input.assets,
@@ -78,4 +81,3 @@ class UserProfilingAgent:
             score += 7
 
         return score
-

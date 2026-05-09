@@ -216,7 +216,7 @@ export default function ProfilingView({ user, onSubmit, isLoading, hasResults, o
             </label>
 
             {/* Insurance Goal */}
-            <label className="flex flex-col gap-1.5 col-span-2">
+            <label className="flex flex-col gap-1.5">
               <span className="text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
                 Insurance Goal
               </span>

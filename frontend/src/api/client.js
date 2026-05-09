@@ -6,7 +6,7 @@
    2. fetchScoreInsights  — POSTs the full response to /explain-scores
       to get OpenAI-powered per-score reasoning
    ═══════════════════════════════════════════════════════════════════════════ */
-
+const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
 /**
  * Send a UserInput payload to the backend and return the RecommendationResponse.
  *
@@ -14,7 +14,7 @@
  * @returns {Promise<object>} — RecommendationResponse from FastAPI
  */
 export async function fetchRecommendation(userInput) {
-  const response = await fetch('/recommend', {
+  const response = await fetch(`${API_URL}/recommend`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userInput),
@@ -37,7 +37,7 @@ export async function fetchRecommendation(userInput) {
  */
 export async function fetchScoreInsights(recommendationResponse) {
   try {
-    const response = await fetch('/explain-scores', {
+    const response = await fetch(`${API_URL}/explain-scores`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(recommendationResponse),

@@ -45,7 +45,7 @@ recommender = RecommendationAgent()
 @app.get("/")
 def root() -> Dict[str, str]:
     """Root endpoint — API is alive."""
-    return {"message": "InsureAI API is running. Use POST /recommend for recommendations."}
+    return {"message": "InsuraX API is running. Use POST /recommend for recommendations."}
 
 
 @app.get("/health")

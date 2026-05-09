@@ -11,7 +11,7 @@ import {
   ShieldAlert,
   Activity,
   Workflow,
-  Info,
+  ShieldCheck,
 } from 'lucide-react';
 
 /* Navigation items — each maps to a "page" key consumed by App.jsx */
@@ -19,8 +19,9 @@ const NAV_ITEMS = [
   { key: 'dashboard',  label: 'Dashboard',      icon: LayoutDashboard },
   { key: 'profile',    label: 'User Profiling',  icon: UserCircle },
   { key: 'risk',       label: 'Risk Simulator',  icon: ShieldAlert },
-  { key: 'trace',      label: 'Agent Trace',     icon: Workflow },
   { key: 'scenarios',  label: 'Scenarios',       icon: Activity },
+  { key: 'critic',     label: 'Critic Agent',    icon: ShieldCheck },
+  { key: 'trace',      label: 'Agent Trace',     icon: Workflow },
 ];
 
 export default function Sidebar({ activePage, onNavigate }) {
@@ -47,7 +48,7 @@ export default function Sidebar({ activePage, onNavigate }) {
               className="text-[15px] font-bold tracking-tight"
               style={{ color: 'var(--color-cream)', fontFamily: 'var(--font-serif)' }}
             >
-              InsureAI
+              InsuraX
             </h1>
             <p className="text-[10px] tracking-widest uppercase" style={{ color: 'var(--color-sand-light)' }}>
               Adaptive Agent

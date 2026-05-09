@@ -6,8 +6,14 @@ from typing import Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
-
-InsuranceGoal = Literal["family_protection", "health_security", "wealth_protection", "tax_savings", "car_insurance", "home_insurance"]
+InsuranceGoal = Literal[
+    "family_protection",
+    "health_security",
+    "wealth_protection",
+    "tax_savings",
+    "car_insurance",
+    "home_insurance",
+]
 
 
 AlcoholConsumption = Literal["none", "occasional", "moderate", "heavy"]
@@ -16,8 +22,16 @@ AlcoholConsumption = Literal["none", "occasional", "moderate", "heavy"]
 class UserInput(BaseModel):
     """Raw user input accepted by the API and CLI."""
 
-    name: str = Field(default="", description="User's name for personalization (optional)")
+    name: str = Field(
+        default="", description="User's name for personalization (optional)"
+    )
     age: int = Field(default=30, ge=18, le=70)
+    location: str = Field(
+        default="Urban",
+        description="User's location type (e.g., Urban, Semi-Urban, Rural)",
+    )
+    state: str = Field(default="", description="State or province of residence")
+    city: str = Field(default="", description="City or exact local area")
     income: float = Field(default=600000, ge=0)
     dependents: int = Field(default=0, ge=0, le=10)
     assets: float = Field(default=0, ge=0)
@@ -25,9 +39,16 @@ class UserInput(BaseModel):
     insurance_goal: InsuranceGoal = "family_protection"
 
     # ── Health Profile (optional, defaults keep backward compatibility) ──
-    is_smoker: bool = Field(default=False, description="Whether the user is a regular smoker")
-    alcohol_consumption: AlcoholConsumption = Field(default="none", description="Alcohol consumption frequency")
-    has_severe_health_issues: bool = Field(default=False, description="Pre-existing severe health conditions (e.g. diabetes, heart disease, cancer)")
+    is_smoker: bool = Field(
+        default=False, description="Whether the user is a regular smoker"
+    )
+    alcohol_consumption: AlcoholConsumption = Field(
+        default="none", description="Alcohol consumption frequency"
+    )
+    has_severe_health_issues: bool = Field(
+        default=False,
+        description="Pre-existing severe health conditions (e.g. diabetes, heart disease, cancer)",
+    )
 
     @field_validator("dependents", mode="before")
     @classmethod
@@ -48,6 +69,9 @@ class UserProfile(BaseModel):
     """Structured user profile derived from raw inputs."""
 
     age: int
+    location: str
+    state: str
+    city: str
     income: float
     dependents: int
     assets: float
@@ -92,7 +116,6 @@ class RankedPolicy(BaseModel):
     explanation_points: List[str]
 
 
-
 class ScenarioBreakdown(BaseModel):
     """Expected impact for an individual simulated scenario."""
 
@@ -101,7 +124,6 @@ class ScenarioBreakdown(BaseModel):
     cost: float
     expected_impact: float
     reasons: List[str] = Field(default_factory=list)
-
 
 
 class ScenarioSimulationResult(BaseModel):
@@ -149,7 +171,8 @@ class RecommendationResponse(BaseModel):
     top_policies: List[RankedPolicy]
     critic_issues: List[str]
     confidence_score: float
-    memory_snapshot: MemorySnapshot
+    memory_snapshot: MemorySnapshot | None = None
     explanation: str
     regulatory_note: str
+    compliance_report: dict | None = None
     agent_trace: List[AgentTraceEntry] = Field(default_factory=list)
